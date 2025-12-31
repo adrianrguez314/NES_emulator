@@ -1,6 +1,8 @@
 #ifndef cpu_h
 #define cpu_h 
+
 #include <cstdint>
+#include <array>
 
 #include "../memory/memory.h"
 
@@ -13,15 +15,24 @@ class CPU {
         ~CPU();
         void reset();
         void executeInstruction();
+
+        protected:
+            struct Registers {
+                uint8_t A;      // Accumulator
+                uint8_t X;      // X Register
+                uint8_t Y;      // Y Register
+                uint16_t PC;     // Program Counter
+                uint8_t status; // Status Register
+            } registers;
         
+            void opLDA_IMM();
+            void opSTA_ZP();
+            void opNOP();
+
         private:
-        struct Register {
-            uint8_t A;
-            uint8_t X;
-            uint8_t Y;
-            uint8_t PC;
-            uint8_t status;
-        } registers;
+            using Opfunc = void(*)(CPU&);
+            std::array<Opfunc, 256> opcodeTable;
+
 };
 #endif // cpu_h
 

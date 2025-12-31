@@ -1,7 +1,3 @@
 #include <iostream>
 
-// look ups opcode implementations
-
-
-
-
+#include "opcodes.h"
