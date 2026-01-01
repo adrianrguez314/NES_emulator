@@ -14,6 +14,9 @@ class Memory {
         uint8_t read(uint16_t addr);
         void write(uint16_t addr, uint8_t value);
 
+        uint16_t read_u16 (uint16_t addr);
+        void write_u16 (uint16_t addr, uint16_t value);
+
     private:
         std::array<uint8_t, MEMORY_SIZE> memoryData { };
 };

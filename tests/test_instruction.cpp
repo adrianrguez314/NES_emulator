@@ -3,6 +3,9 @@
 
 // Test loading a value into a registers
 void testLDAImm() {
+
+    PRINT_TEST_TITLE("TEST: Instructions");
+
     Memory mem;
     CPU cpu(mem);
 
