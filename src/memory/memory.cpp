@@ -4,8 +4,6 @@
 
 Memory::Memory() {
     std::cout << "Memory initialized.\n";
-
-    memoryData = { 0 } ;
 }
 
 Memory::~Memory() {

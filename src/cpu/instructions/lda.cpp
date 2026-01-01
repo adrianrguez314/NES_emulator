@@ -1,7 +1,8 @@
 #include "../cpu.h"
 
-void CPU::opLDA_IMM() {
+#include <iostream>
 
-    uint8_t value = mem.read(registers.PC++);
+void CPU::opLDA_IMM() {
+    uint8_t value = mem.read(registers.PC + 1);
     registers.A = value;
 }

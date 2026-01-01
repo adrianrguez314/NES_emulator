@@ -4,41 +4,62 @@ CXXFLAGS := -std=c++17 -Wall -Wextra -O2
 SRCDIR := src
 OBJDIR := build
 BINDIR := bin
+EXEEXT := .exe
 
-ifeq ($(OS),Windows_NT)
-    EXEEXT := .exe
-    MKDIR = if not exist "$1" mkdir "$1"
-    RMOBJ = if exist "$(OBJDIR)" rmdir /S /Q "$(OBJDIR)"
-    RMBIN = if exist "$(BINDIR)" rmdir /S /Q "$(BINDIR)"
-    RUN = $(TARGET)
-else
-    EXEEXT :=
-    MKDIR = mkdir -p "$1"
-    RMOBJ = rm -rf "$(OBJDIR)"
-    RMBIN = rm -rf "$(BINDIR)"
-    RUN = ./$(TARGET)
-endif
+TARGET := $(BINDIR)\nes$(EXEEXT)
+TEST_TARGET := $(BINDIR)\run_tests$(EXEEXT)
 
-TARGET := $(BINDIR)/nes$(EXEEXT)
+SRCS := \
+    $(SRCDIR)\main.cpp \
+    $(SRCDIR)\cpu\cpu.cpp \
+    $(SRCDIR)\cpu\instructions\lda.cpp \
+    $(SRCDIR)\cpu\instructions\misc.cpp \
+    $(SRCDIR)\memory\memory.cpp
 
-SRCS := $(wildcard $(SRCDIR)/*.cpp $(SRCDIR)/cpu/*.cpp $(SRCDIR)/memory/*.cpp)
-OBJS := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
+OBJS := \
+    $(OBJDIR)\main.o \
+    $(OBJDIR)\cpu\cpu.o \
+    $(OBJDIR)\cpu\instructions\lda.o \
+    $(OBJDIR)\cpu\instructions\misc.o \
+    $(OBJDIR)\memory\memory.o
 
-.PHONY: all clean run
+TEST_SRCS := tests\instruction_test.cpp
+TEST_OBJS := $(OBJDIR)\tests\instruction_test.o
+
+.PHONY: all clean run test
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	@if not exist "$(BINDIR)" mkdir "$(BINDIR)"
+	if not exist $(BINDIR) mkdir $(BINDIR)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	@if not exist "$(dir $@)" mkdir "$(dir $@)"
+$(OBJDIR)\main.o: $(SRCDIR)\main.cpp
+	if not exist $(OBJDIR) mkdir $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-clean:
-	-$(RMOBJ)
-	-$(RMBIN)
+$(OBJDIR)\cpu\cpu.o: $(SRCDIR)\cpu\cpu.cpp
+	if not exist $(OBJDIR)\cpu mkdir $(OBJDIR)\cpu
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-run: $(TARGET)
-	$(RUN)
+$(OBJDIR)\cpu\instructions\lda.o: $(SRCDIR)\cpu\instructions\lda.cpp
+	if not exist $(OBJDIR)\cpu\instructions mkdir $(OBJDIR)\cpu\instructions
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJDIR)\cpu\instructions\misc.o: $(SRCDIR)\cpu\instructions\misc.cpp
+	if not exist $(OBJDIR)\cpu\instructions mkdir $(OBJDIR)\cpu\instructions
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJDIR)\memory\memory.o: $(SRCDIR)\memory\memory.cpp
+	if not exist $(OBJDIR)\memory mkdir $(OBJDIR)\memory
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+
+$(OBJDIR)\tests\instruction_test.o: tests\instruction_test.cpp
+	if not exist $(OBJDIR)\tests mkdir $(OBJDIR)\tests
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+test: $(TEST_OBJS)
+	if not exist $(BINDIR) mkdir $(BINDIR)
+	$(CXX) $(CXXFLAGS) $(OBJDIR)\cpu\cpu.o $(OBJDIR)\cpu\instructions\lda.o $(OBJDIR)\cpu\instructions\misc.o $(OBJDIR)\memory\memory.o $(TEST_OBJS) -o $(BINDIR)\run_tests.exe
+	$(BINDIR)\run_tests.exe

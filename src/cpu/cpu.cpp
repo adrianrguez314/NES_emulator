@@ -1,10 +1,13 @@
+#include <iostream>
+
 #include "cpu.h"
 #include "opcodes.h"
 
 
 CPU::CPU(Memory& memory) : mem(memory) {
+    reset();
+    initOpcodeTable();
     std::cout << "CPU initialized.\n";
-    this->reset();
 }
 
 CPU::~CPU () {
@@ -19,9 +22,29 @@ void CPU::reset() {
     registers.status = 0;
 }
 
+void CPU::initOpcodeTable() {
+    opcodeTable.fill(&CPU::opNOP);
+
+    opcodeTable[LDA_IMM] = &CPU::opLDA_IMM;
+    opcodeTable[NOP]     = &CPU::opNOP;
+}
+
 void CPU::executeInstruction() {
     uint8_t opcode = mem.read(registers.PC);
-    opcodeTable[opcode](*this);
 
+    (this->*opcodeTable[opcode])();
+}
+
+uint8_t CPU::getRegister(char registerName) const {
+    switch (registerName) {
+        case 'A':
+            return registers.A;
+        case 'X':
+            return registers.X;
+        case 'Y': 
+            return registers.Y;
+        default:
+            throw std:: invalid_argument("Invalid CPU register");
+    }
 }
 

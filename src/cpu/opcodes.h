@@ -3,8 +3,6 @@
 
 #include <cstdint>
 
-#include "opcodes.cpp"
-
 enum Opcodes: uint8_t {
     NOP = 0xEA, // No Operation
 

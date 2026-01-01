@@ -1,3 +1,3 @@
 #include "../cpu.h"
 
-void opNop(CPU& cpu) { }
+void CPU::opNOP() { }

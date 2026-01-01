@@ -15,6 +15,7 @@ class CPU {
         ~CPU();
         void reset();
         void executeInstruction();
+        uint8_t getRegister(char registerName) const; 
 
         protected:
             struct Registers {
@@ -26,12 +27,13 @@ class CPU {
             } registers;
         
             void opLDA_IMM();
-            void opSTA_ZP();
             void opNOP();
 
         private:
-            using Opfunc = void(*)(CPU&);
-            std::array<Opfunc, 256> opcodeTable;
+            using OpFunc = void (CPU::*)();
+            std::array<OpFunc, 256> opcodeTable;
+
+            void initOpcodeTable();
 
 };
 #endif // cpu_h
