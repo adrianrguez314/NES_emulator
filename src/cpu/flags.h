@@ -23,9 +23,9 @@ struct Flags {
         p &= ~(1 << f);
     }
 
-    static inline bool isSet(uint8_t p, Flag f) {
-        return p & (1 << f);
-    }
+     static inline bool isSet(const uint8_t &p, Flag f) {
+          return (p & (1 << f)) != 0;
+     }
 
     static inline void updateZN(uint8_t &p, uint8_t v) {
         (v == 0) ? set(p, ZERO) : clear(p, ZERO);
