@@ -2,7 +2,7 @@
 #define cpu_h 
 
 #include <cstdint>
-#include <array>
+#include <functional>
 
 #include "../memory/memory.h"
 
@@ -26,10 +26,8 @@ class CPU {
             Absolute_Y,
             Indirect_X,
             Indirect_Y,
-            NoneAddressing,
             };
         uint16_t getAddress(AddressingMode mode);
-
         uint8_t getRegister(char registerName) const; 
 
         protected:
@@ -40,14 +38,12 @@ class CPU {
                 uint16_t PC;     // Program Counter
                 uint8_t status; // Status Register
             } registers;
-        
-            void opLDA_IMM();
+  
+            void opLDA(AddressingMode mode);
             void opNOP();
 
         private:
-            using OpFunc = void (CPU::*)();
-            std::array<OpFunc, 256> opcodeTable;
-
+            std::array<std::function<void(CPU&)>, 256> opcodeTable;
             void initOpcodeTable();
 
 };

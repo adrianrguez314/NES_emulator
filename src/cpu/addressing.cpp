@@ -1,10 +1,13 @@
+#include <iostream>
+
 #include "cpu.h"
 
 
 uint16_t CPU::getAddress(AddressingMode mode) {
     switch (mode) {
         case AddressingMode::Immediate:
-            return 0;
+            registers.PC++;
+            return registers.PC;
         case AddressingMode::ZeroPage:
             return 0;
         case AddressingMode::ZeroPage_X:
@@ -21,8 +24,8 @@ uint16_t CPU::getAddress(AddressingMode mode) {
             return 0;
         case AddressingMode::Indirect_Y:
             return 0;
-        case AddressingMode::NoneAddressing:
-            return 0;
+        default:
+            throw std::runtime_error("Addressing mode not implemented");
         
     }
 }

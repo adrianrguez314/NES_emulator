@@ -23,16 +23,15 @@ void CPU::reset() {
 }
 
 void CPU::initOpcodeTable() {
-    opcodeTable.fill(&CPU::opNOP);
+    for (auto& op : opcodeTable) op = [](CPU& cpu){ cpu.opNOP(); };
 
-    opcodeTable[LDA_IMM] = &CPU::opLDA_IMM;
-    opcodeTable[NOP]     = &CPU::opNOP;
+    opcodeTable[LDA_IMM] = [](CPU& cpu){ cpu.opLDA(CPU::AddressingMode::Immediate); };
+    opcodeTable[NOP] = [](CPU& cpu){ cpu.opNOP(); };
 }
 
 void CPU::executeInstruction() {
     uint8_t opcode = mem.read(registers.PC);
-
-    (this->*opcodeTable[opcode])();
+    opcodeTable[opcode](*this); 
 }
 
 uint8_t CPU::getRegister(char registerName) const {
