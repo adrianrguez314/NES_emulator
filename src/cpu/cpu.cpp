@@ -26,11 +26,14 @@ void CPU::initOpcodeTable() {
     for (auto& op : opcodeTable) op = [](CPU& cpu){ cpu.opNOP(); };
 
     opcodeTable[LDA_IMM] = [](CPU& cpu){ cpu.opLDA(CPU::AddressingMode::Immediate); };
+    opcodeTable[LDA_ZP] = [](CPU& cpu){ cpu.opLDA(CPU::AddressingMode::ZeroPage); };
+    opcodeTable[LDA_ABS] = [](CPU& cpu){ cpu.opLDA(CPU::AddressingMode::Absolute); };
     opcodeTable[NOP] = [](CPU& cpu){ cpu.opNOP(); };
 }
 
 void CPU::executeInstruction() {
     uint8_t opcode = mem.read(registers.PC);
+    registers.PC++;
     opcodeTable[opcode](*this); 
 }
 

@@ -6,16 +6,15 @@
 uint16_t CPU::getAddress(AddressingMode mode) {
     switch (mode) {
         case AddressingMode::Immediate:
-            registers.PC++;
             return registers.PC;
-        case AddressingMode::ZeroPage:
-            return 0;
+        case AddressingMode::ZeroPage:  
+            return static_cast<uint16_t> (mem.read(registers.PC));
         case AddressingMode::ZeroPage_X:
             return 0;
         case AddressingMode::ZeroPage_Y:
             return 0;
         case AddressingMode::Absolute:
-            return 0;
+            return mem.read_u16(registers.PC);
         case AddressingMode::Absolute_X:
             return 0;
         case AddressingMode::Absolute_Y:
