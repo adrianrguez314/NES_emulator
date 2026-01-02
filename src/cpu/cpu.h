@@ -15,6 +15,21 @@ class CPU {
         ~CPU();
         void reset();
         void executeInstruction();
+
+        enum class AddressingMode {
+            Immediate,
+            ZeroPage,
+            ZeroPage_X,
+            ZeroPage_Y,
+            Absolute,
+            Absolute_X,
+            Absolute_Y,
+            Indirect_X,
+            Indirect_Y,
+            NoneAddressing,
+            };
+        uint16_t getAddress(AddressingMode mode);
+
         uint8_t getRegister(char registerName) const; 
 
         protected:
