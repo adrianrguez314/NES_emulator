@@ -14,6 +14,8 @@ enum class Opcode : uint8_t {
     LDA_ABS  = 0xAD,
     LDA_ABSX = 0xBD,
     LDA_ABSY = 0xB9,
+    LDA_INX = 0xA1,
+    LDA_INY = 0xB2,
 
     // LDX - Load X
     LDX_IMM  = 0xA2,
@@ -35,6 +37,8 @@ enum class Opcode : uint8_t {
     STA_ABS = 0x8D,
     STA_ABSX = 0x90,
     STA_ABSY = 0x99,
+    STA_INX = 0x81,
+    STA_INY = 0x92,
 
     //STX - Store X
     STX_ZP = 0x86,
@@ -71,6 +75,8 @@ inline void initOpcodeTable() {
     OPCODE_TABLE[0xAD] = { CPU::AddressingMode::Absolute,   3, 4, &CPU::opLDA };
     OPCODE_TABLE[0xBD] = { CPU::AddressingMode::Absolute_X, 3, 4, &CPU::opLDA };
     OPCODE_TABLE[0xB9] = { CPU::AddressingMode::Absolute_Y, 3, 4, &CPU::opLDA };
+    OPCODE_TABLE[0xA1] = { CPU::AddressingMode::Indirect_X, 3, 4, &CPU::opLDA };
+    OPCODE_TABLE[0xB2] = { CPU::AddressingMode::Indirect_Y, 3, 4, &CPU::opLDA };
 
     // LDX
     OPCODE_TABLE[0xA2] = { CPU::AddressingMode::Immediate,  2, 2, &CPU::opLDX };
@@ -92,6 +98,8 @@ inline void initOpcodeTable() {
     OPCODE_TABLE[0x8D] = { CPU::AddressingMode::Absolute,   2, 4, &CPU::opSTA };
     OPCODE_TABLE[0x90] = { CPU::AddressingMode::Absolute_X, 3, 4, &CPU::opSTA };
     OPCODE_TABLE[0x99] = { CPU::AddressingMode::Absolute_Y, 3, 4, &CPU::opSTA };
+    OPCODE_TABLE[0x81] = { CPU::AddressingMode::Indirect_X, 3, 4, &CPU::opSTA };
+    OPCODE_TABLE[0x92] = { CPU::AddressingMode::Indirect_Y, 3, 4, &CPU::opSTA };
 
     // STX
     OPCODE_TABLE[0x86] = { CPU::AddressingMode::ZeroPage,   2, 2, &CPU::opSTX };

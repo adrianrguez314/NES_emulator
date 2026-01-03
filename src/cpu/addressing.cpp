@@ -34,11 +34,28 @@ uint16_t CPU::getAddress(AddressingMode mode) {
             return pos + registers.Y;
         }
 
-        case AddressingMode::Indirect_X:
-            return 0;
+        case AddressingMode::Indirect_X: {
+            uint8_t base = mem.read(registers.PC);
+            registers.PC++;
+            
+            uint8_t ptr = (base + registers.X) & 0xFF;  
 
-        case AddressingMode::Indirect_Y:
-            return 0;
+            uint8_t low  = mem.read(ptr);               
+            uint8_t high = mem.read((ptr + 1) & 0xFF);  
+
+            return static_cast<uint16_t>(high) << 8 | low;
+        }
+        case AddressingMode::Indirect_Y: {
+            uint8_t base = mem.read(registers.PC);
+            registers.PC++; 
+
+            uint8_t low  = mem.read(base);               
+            uint8_t high = mem.read((base + 1) % 0xFF);
+            
+            uint16_t addr = (static_cast<uint16_t>(high) << 8 | low);
+            return addr + registers.Y;
+
+        }
         
         default:
             throw std::runtime_error("Addressing mode not implemented");

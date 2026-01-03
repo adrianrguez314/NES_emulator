@@ -72,6 +72,42 @@ void testSTInstructions() {
     cpu.executeInstruction();
     EXPECT_EQ(mem.read(0x3008) == 0x66);
 
+    PRINT_TEST_SUBTITLE("Register A | STA_INX");
+    cpu.reset();
+
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
+    mem.write(0x0001, 0x77);
+    cpu.executeInstruction();  
+
+    mem.write(0x0002, static_cast<uint8_t>(Opcode::LDX_IMM));
+    mem.write(0x0003, 0x02);
+    cpu.executeInstruction();  
+
+    mem.write(0x0004, static_cast<uint8_t>(Opcode::STA_INX));
+    mem.write(0x0005, 0x04);      
+    mem.write(0x06, 0x50);        
+    mem.write(0x07, 0x60);      
+    cpu.executeInstruction();
+    EXPECT_EQ(mem.read(0x6052) == 0x77);  
+
+    PRINT_TEST_SUBTITLE("Register A | STA_INY");
+    cpu.reset();
+
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
+    mem.write(0x0001, 0x88);
+    cpu.executeInstruction();  
+
+    mem.write(0x0002, static_cast<uint8_t>(Opcode::LDY_IMM));
+    mem.write(0x0003, 0x03);
+    cpu.executeInstruction();  
+
+    mem.write(0x0004, static_cast<uint8_t>(Opcode::STA_INY));
+    mem.write(0x0005, 0x20);     
+    mem.write(0x20, 0x40);      
+    mem.write(0x21, 0x50);        
+    cpu.executeInstruction();
+    EXPECT_EQ(mem.read(0x5043) == 0x88);
+
     // Test STX instruction
 
     PRINT_TEST_SUBTITLE("Register X | STX_ZP");
