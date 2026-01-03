@@ -26,6 +26,7 @@ class CPU {
             Absolute_Y,
             Indirect_X,
             Indirect_Y,
+            Not_addressing,
             };
         uint16_t getAddress(AddressingMode mode);
         uint8_t getRegister(char registerName) const; 
@@ -44,10 +45,17 @@ class CPU {
             void opLDY(AddressingMode mode);
 
             
-            void opNOP();
+            void opNOP(AddressingMode mode);
 
         private:
-            std::array<std::function<void(CPU&)>, 256> opcodeTable;
+            struct OpCodeEntry {
+                uint8_t code;
+                CPU::AddressingMode mode;
+                uint8_t len;
+                std::function<void(CPU&)> exec;
+            };
+            std::array<OpCodeEntry, 256> opcodeTable;
+
             void initOpcodeTable();
 
 };

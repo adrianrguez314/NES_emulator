@@ -26,7 +26,7 @@ enum Opcodes: uint8_t {
     //LDY - Load Y Register
     LDY_IMM = 0xA0,
     LDY_ZP = 0xA4,
-    LDY_XZP = 0xB4,
+    LDY_ZPX = 0xB4,
     LDY_ABS = 0xAC,
     LDY_ABSX = 0xBC,
     
