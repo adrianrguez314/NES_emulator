@@ -31,6 +31,16 @@ class CPU {
         uint16_t getAddress(AddressingMode mode);
         uint8_t getRegister(char registerName) const; 
 
+        void opLDA(AddressingMode mode);
+        void opLDX(AddressingMode mode);
+        void opLDY(AddressingMode mode);
+
+        void opSTA(AddressingMode mode);
+        void opSTX(AddressingMode mode);
+        void opSTY(AddressingMode mode);
+            
+        void opNOP(AddressingMode mode);
+
         protected:
             struct Registers {
                 uint8_t A;      // Accumulator
@@ -39,24 +49,6 @@ class CPU {
                 uint16_t PC;     // Program Counter
                 uint8_t status; // Status Register
             } registers;
-  
-            void opLDA(AddressingMode mode);
-            void opLDX(AddressingMode mode);
-            void opLDY(AddressingMode mode);
-
-            
-            void opNOP(AddressingMode mode);
-
-        private:
-            struct OpCodeEntry {
-                uint8_t code;
-                CPU::AddressingMode mode;
-                uint8_t len;
-                std::function<void(CPU&)> exec;
-            };
-            std::array<OpCodeEntry, 256> opcodeTable;
-
-            void initOpcodeTable();
 
 };
 #endif // cpu_h
