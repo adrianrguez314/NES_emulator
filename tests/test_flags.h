@@ -3,4 +3,4 @@
 
 void testFlags();
 
-#endif // tes flags_h
+#endif // test flags_h
