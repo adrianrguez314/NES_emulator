@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 
 #include "memory.h"
 
@@ -31,4 +32,17 @@ void Memory::write_u16(uint16_t addr, uint16_t value) {
 
     this->write(addr,low);
     this->write(addr + 1, high);
+}
+
+void Memory::read_memory_block(int start, int length) {
+    for(int line = 0; line < length; line += 16) {
+        int addr = start + line;
+        std::cout << std::setw(4) << std::setfill('0') << std::hex << addr << ": ";
+        for(int i = 0; i < 16 && (addr + i) < start + length; i++) {
+            std::cout << std::setw(2) << std::setfill('0') << std::hex
+                      << +memoryData[(addr + i) % MEMORY_SIZE] << " ";
+        }
+        std::cout << "\n";
+    }
+    std::cout << std::dec;
 }

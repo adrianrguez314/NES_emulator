@@ -5,8 +5,8 @@
 
 
 CPU::CPU(Memory& memory) : mem(memory) {
-    reset();
     initOpcodeTable();
+    reset();
     std::cout << "CPU initialized.\n";
 }
 
@@ -22,17 +22,16 @@ void CPU::reset() {
     registers.status = 0;
 }
 
-void CPU::initOpcodeTable() {
-    opcodeTable.fill(&CPU::opNOP);
-
-    opcodeTable[LDA_IMM] = &CPU::opLDA_IMM;
-    opcodeTable[NOP]     = &CPU::opNOP;
-}
-
 void CPU::executeInstruction() {
     uint8_t opcode = mem.read(registers.PC);
+    registers.PC++;
+    uint16_t pc_status = registers.PC;
+    
+    const Instruction& instr = OPCODE_TABLE[opcode];
+    (this->*instr.handler)(instr.mode);
 
-    (this->*opcodeTable[opcode])();
+    if (registers.PC == pc_status)  
+        registers.PC += instr.len - 1; 
 }
 
 uint8_t CPU::getRegister(char registerName) const {

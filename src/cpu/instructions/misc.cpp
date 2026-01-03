@@ -1,3 +1,3 @@
 #include "../cpu.h"
 
-void CPU::opNOP() { }
+void CPU::opNOP(AddressingMode mode) { }

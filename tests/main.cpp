@@ -2,14 +2,15 @@
 
 #include "test_memory.h"
 #include "test_flags.h"
-#include "test_instruction.h"
+#include "instructions/test_instruction.h"
 
 
 int main() {
 
     testMemoryReadWrite();
     testFlags();
-    testLDAImm();
+    testLDInstructions();
+    testSTInstructions();
     
     std::cout << "All CPU/Memory tests passed.\n";
 

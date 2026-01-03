@@ -28,7 +28,10 @@ SRCS := \
 
 OBJS := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 
-TEST_SRCS := $(wildcard $(TESTDIR)/*.cpp)
+TEST_SRCS := \
+	$(wildcard $(TESTDIR)/*.cpp)  \
+	$(wildcard $(TESTDIR)/instructions/*.cpp)
+	
 TEST_OBJS := $(patsubst $(TESTDIR)/%.cpp,$(OBJDIR)/tests/%.o,$(TEST_SRCS))
 
 .PHONY: all clean run test

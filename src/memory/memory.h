@@ -4,8 +4,6 @@
 #include <cstdint>
 #include <array>
 
-#define MEMORY_SIZE 2* 1024 // 2KB of RAM
-
 class Memory {
     public:
         Memory();
@@ -16,8 +14,10 @@ class Memory {
 
         uint16_t read_u16 (uint16_t addr);
         void write_u16 (uint16_t addr, uint16_t value);
+        void read_memory_block(int start, int length);
 
     private:
+        static constexpr int MEMORY_SIZE = 2 * 1024; // 2KB RAM
         std::array<uint8_t, MEMORY_SIZE> memoryData { };
 };
 
