@@ -28,6 +28,16 @@ void CPU::initOpcodeTable() {
     opcodeTable[LDA_IMM] = [](CPU& cpu){ cpu.opLDA(CPU::AddressingMode::Immediate); };
     opcodeTable[LDA_ZP] = [](CPU& cpu){ cpu.opLDA(CPU::AddressingMode::ZeroPage); };
     opcodeTable[LDA_ABS] = [](CPU& cpu){ cpu.opLDA(CPU::AddressingMode::Absolute); };
+
+    opcodeTable[LDX_IMM] = [](CPU& cpu){ cpu.opLDX(CPU::AddressingMode::Immediate); };
+    opcodeTable[LDX_ZP] = [](CPU& cpu){ cpu.opLDX(CPU::AddressingMode::ZeroPage); };
+    opcodeTable[LDX_ABS] = [](CPU& cpu){ cpu.opLDX(CPU::AddressingMode::Absolute); };
+
+
+    opcodeTable[LDY_IMM] = [](CPU& cpu){ cpu.opLDY(CPU::AddressingMode::Immediate); };
+    opcodeTable[LDY_ZP] = [](CPU& cpu){ cpu.opLDY(CPU::AddressingMode::ZeroPage); };
+    opcodeTable[LDY_ABS] = [](CPU& cpu){ cpu.opLDY(CPU::AddressingMode::Absolute); };
+
     opcodeTable[NOP] = [](CPU& cpu){ cpu.opNOP(); };
 }
 

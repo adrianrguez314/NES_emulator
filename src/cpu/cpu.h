@@ -40,6 +40,10 @@ class CPU {
             } registers;
   
             void opLDA(AddressingMode mode);
+            void opLDX(AddressingMode mode);
+            void opLDY(AddressingMode mode);
+
+            
             void opNOP();
 
         private:
