@@ -29,7 +29,7 @@ class CPU {
             Not_addressing,
             };
         uint16_t getAddress(AddressingMode mode);
-        uint8_t getRegister(char registerName) const; 
+        uint8_t getRegister(char registerName) const;
 
 
         // Load Register
