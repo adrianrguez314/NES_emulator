@@ -1,175 +1,197 @@
-#include "../test_helpers.h"
-#include "test_instruction.h"
+#include <gtest/gtest.h>
 
-// Test loading values into registers
-void testLDInstructions() {
+#include "../../src/cpu/cpu.h"
+#include "../../src/memory/memory.h"
+#include "../../src/cpu/opcodes.h"
+#include "../../src/cpu/flags.h"
 
-    PRINT_TEST_TITLE("TEST: LD Instructions");
-
+TEST(LDInstructions, Immediate) {
     Memory mem;
     CPU cpu(mem);
 
-    char registers[3] = {'A','X','Y'};
-
-    // Opcodes array adaptado a enum class Opcode
-    Opcode program[] = {
-        Opcode::LDA_IMM, Opcode::LDA_ZP, Opcode::LDA_ABS,  // A
-        Opcode::LDX_IMM, Opcode::LDX_ZP, Opcode::LDX_ABS,  // X
-        Opcode::LDY_IMM, Opcode::LDY_ZP, Opcode::LDY_ABS   // Y
-    };
-
-    for (int i = 0; i < 3; i++) {
-        char reg = registers[i];
-
-        // IMMEDIATE
-        mem.write(0x0000, static_cast<uint8_t>(program[i * 3 + 0]));
-        mem.write(0x0001, 0x42);
-        cpu.reset();
-
-        PRINT_TEST_SUBTITLE("Addressing mode: IMMEDIATE");
-        cpu.executeInstruction();
-        EXPECT_REG_EQ(cpu, reg, 0x42);
-
-        // ZERO_PAGE
-        PRINT_TEST_SUBTITLE("Addressing mode: ZERO_PAGE");
-        mem.write(0x0010, 0x65);
-        mem.write(0x0002, static_cast<uint8_t>(program[i * 3 + 1]));
-        mem.write(0x0003, 0x10);
-
-        cpu.executeInstruction();
-        EXPECT_REG_EQ(cpu, reg, 0x65);
-
-        // ABSOLUTE
-        PRINT_TEST_SUBTITLE("Addressing mode: ABSOLUTE");
-        mem.write(0x1255, 0x88);
-        mem.write(0x0004, static_cast<uint8_t>(program[i * 3 + 2]));
-        mem.write_u16(0x0005, 0x1255);
-
-        cpu.executeInstruction();
-        EXPECT_REG_EQ(cpu, reg, 0x88);
-    }
-
-    PRINT_TEST_TITLE("TEST: ZERO_PAGE indexed addressing modes");
-
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
+    mem.write(0x0001, 0x42);
     cpu.reset();
-    PRINT_TEST_SUBTITLE("Register A | LDA_ZPX");
-    mem.write(0x0090, 0x42);   // 0x80 + 0x10 = 0x90
+    cpu.executeInstruction();
+    EXPECT_EQ(cpu.getRegister('A'), 0x42); 
 
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
+    mem.write(0x0001, 0x10);
+    cpu.reset();
+    cpu.executeInstruction();
+    EXPECT_EQ(cpu.getRegister('X'), 0x10);
+
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_IMM));
+    mem.write(0x0001, 0x55);
+    cpu.reset();
+    cpu.executeInstruction();
+    EXPECT_EQ(cpu.getRegister('Y'), 0x55);
+}
+
+TEST(LDInstructions, ZeroPage) {
+    Memory mem;
+    CPU cpu(mem);
+
+    mem.write(0x0010, 0x65);
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_ZP));
+    mem.write(0x0001, 0x10);
+    cpu.reset();
+    cpu.executeInstruction();
+    EXPECT_EQ(cpu.getRegister('A'), 0x65);
+
+    mem.write(0x0010, 0x77);
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_ZP));
+    mem.write(0x0001, 0x10);
+    cpu.reset();
+    cpu.executeInstruction();
+    EXPECT_EQ(cpu.getRegister('X'), 0x77);
+
+    mem.write(0x0010, 0x88);
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_ZP));
+    mem.write(0x0001, 0x10);
+    cpu.reset();
+    cpu.executeInstruction();
+    EXPECT_EQ(cpu.getRegister('Y'), 0x88);
+}
+
+TEST(LDInstructions, ZeroPageIndexed) {
+    Memory mem;
+    CPU cpu(mem);
+
+    
+    mem.write(0x0090, 0x42);  
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
     mem.write(0x0001, 0x10);
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDA_ZPX));
     mem.write(0x0003, 0x80);
-
-    cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'X', 0x10);
-    cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'A', 0x42);
+    cpu.executeInstruction(); 
+    EXPECT_EQ(cpu.getRegister('X'), 0x10);
+    cpu.executeInstruction(); 
+    EXPECT_EQ(cpu.getRegister('A'), 0x42);
 
     cpu.reset();
-    PRINT_TEST_SUBTITLE("Register X | LDX_ZPY");
-    mem.write(0x0090, 0x42);   // 0x80 + 0x10 = 0x90
-
+    mem.write(0x0090, 0x42);
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_IMM));
     mem.write(0x0001, 0x10);
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDX_ZPY));
     mem.write(0x0003, 0x80);
-
-    cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'Y', 0x10);
-    cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'X', 0x42);
+    cpu.executeInstruction(); 
+    EXPECT_EQ(cpu.getRegister('Y'), 0x10);
+    cpu.executeInstruction(); 
+    EXPECT_EQ(cpu.getRegister('X'), 0x42);
 
     cpu.reset();
-    PRINT_TEST_SUBTITLE("Register Y | LDY_ZPX");
-    mem.write(0x0090, 0x42);   // 0x80 + 0x10 = 0x90
-
+    mem.write(0x0090, 0x42);
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
     mem.write(0x0001, 0x10);
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDY_ZPX));
     mem.write(0x0003, 0x80);
+    cpu.executeInstruction(); 
+    EXPECT_EQ(cpu.getRegister('X'), 0x10);
+    cpu.executeInstruction(); 
+    EXPECT_EQ(cpu.getRegister('Y'), 0x42);
+}
 
+
+TEST(LDInstructions, Absolute) {
+    Memory mem;
+    CPU cpu(mem);
+
+    mem.write(0x1255, 0x88);
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_ABS));
+    mem.write_u16(0x0001, 0x1255);
+    cpu.reset();
     cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'X', 0x10);
+    EXPECT_EQ(cpu.getRegister('A'), 0x88);
+
+    mem.write(0x1300, 0x77);
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_ABS));
+    mem.write_u16(0x0001, 0x1300);
+    cpu.reset();
     cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'Y', 0x42);
+    EXPECT_EQ(cpu.getRegister('X'), 0x77);
 
-    PRINT_TEST_TITLE("TEST: ABSOLUTE indexed addressing modes");
+    mem.write(0x1400, 0x66);
+    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_ABS));
+    mem.write_u16(0x0001, 0x1400);
+    cpu.reset();
+    cpu.executeInstruction();
+    EXPECT_EQ(cpu.getRegister('Y'), 0x66);
+}
 
-    cpu.reset(); 
-    PRINT_TEST_SUBTITLE("Register A | LDA_ABSX");
-    mem.write(0x2030, 0x55);   // 0x2020 + 0x10 = 0x2030
+TEST(LDInstructions, AbsoluteIndexed) {
+    Memory mem;
+    CPU cpu(mem);
 
+    mem.write(0x2030, 0x55); // 0x2020 + 0x10 = 0x2030
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
     mem.write(0x0001, 0x10);
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDA_ABSX));
     mem.write_u16(0x0003, 0x2020);
-
-    cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'X', 0x10);
-    cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'A', 0x55);
+    cpu.executeInstruction(); 
+    EXPECT_EQ(cpu.getRegister('X'), 0x10);
+    cpu.executeInstruction(); 
+    EXPECT_EQ(cpu.getRegister('A'), 0x55);
 
     cpu.reset();
-    PRINT_TEST_SUBTITLE("Register X | LDX_ABSY");
-    mem.write(0x2030, 0x66);   // 0x2020 + 0x10 = 0x2030
-
+    mem.write(0x2030, 0x66); // 0x2020 + 0x10 = 0x2030
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_IMM));
     mem.write(0x0001, 0x10);
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDX_ABSY));
     mem.write_u16(0x0003, 0x2020);
-
-    cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'Y', 0x10);
-    cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'X', 0x66);
+    cpu.executeInstruction(); // LDY
+    EXPECT_EQ(cpu.getRegister('Y'), 0x10);
+    cpu.executeInstruction(); // LDX_ABSY
+    EXPECT_EQ(cpu.getRegister('X'), 0x66);
 
     cpu.reset();
-    PRINT_TEST_SUBTITLE("Register Y | LDY_ABSX");
-    mem.write(0x2030, 0x77);   // 0x2020 + 0x10 = 0x2030
-
+    mem.write(0x2030, 0x77); // 0x2020 + 0x10 = 0x2030
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
     mem.write(0x0001, 0x10);
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDY_ABSX));
     mem.write_u16(0x0003, 0x2020);
+    cpu.executeInstruction(); 
+    EXPECT_EQ(cpu.getRegister('X'), 0x10);
+    cpu.executeInstruction(); 
+    EXPECT_EQ(cpu.getRegister('Y'), 0x77);
+}
 
-    cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'X', 0x10);
-    cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'Y', 0x77);
-
-    PRINT_TEST_TITLE("TEST: INDIRECT indexed addressing modes");
-
-    PRINT_TEST_SUBTITLE("Register A | LDA_INX");
-    cpu.reset();
+TEST(LDInstructions, IndirectX) {
+    Memory mem;
+    CPU cpu(mem);
 
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
     mem.write(0x0001, 0x04);
-    cpu.executeInstruction(); 
+    cpu.executeInstruction();
 
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDA_INX));
-    mem.write(0x0003, 0x02);      
+    mem.write(0x0003, 0x02);
 
-    mem.write(0x06, 0x10);        
-    mem.write(0x07, 0x20);        
-    mem.write(0x2010, 0x42);      
+    mem.write(0x06, 0x10);
+    mem.write(0x07, 0x20);
+    mem.write(0x2010, 0x42);
 
     cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'A', 0x42);
+    EXPECT_EQ(cpu.getRegister('A'), 0x42);
+}
 
-    PRINT_TEST_SUBTITLE("Register A | LDA_INY");
-    cpu.reset();
+TEST(LDInstructions, IndirectY) {
+    Memory mem;
+    CPU cpu(mem);
 
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_IMM));
     mem.write(0x0001, 0x05);
-    cpu.executeInstruction();  
-
+    cpu.reset();
+    cpu.executeInstruction();
 
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDA_INY));
-    mem.write(0x0003, 0x10);    
-    mem.write(0x10, 0x20);       
-    mem.write(0x11, 0x30);       
-    mem.write(0x3025, 0x99);    
+    mem.write(0x0003, 0x10);
+
+    mem.write(0x10, 0x20);
+    mem.write(0x11, 0x30);
+    mem.write(0x3025, 0x99);
 
     cpu.executeInstruction();
-    EXPECT_REG_EQ(cpu, 'A', 0x99);
+    EXPECT_EQ(cpu.getRegister('A'), 0x99);
 }
+
