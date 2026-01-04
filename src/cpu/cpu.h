@@ -31,13 +31,36 @@ class CPU {
         uint16_t getAddress(AddressingMode mode);
         uint8_t getRegister(char registerName) const; 
 
+
+        // Load Register
         void opLDA(AddressingMode mode);
         void opLDX(AddressingMode mode);
         void opLDY(AddressingMode mode);
 
+        // Store Register
         void opSTA(AddressingMode mode);
         void opSTX(AddressingMode mode);
         void opSTY(AddressingMode mode);
+
+        //Transfers
+        void opTAX(AddressingMode mode);
+        void opTAY(AddressingMode mode);
+        void opTSX(AddressingMode mode);
+        void opTXA(AddressingMode mode);
+        void opTXS(AddressingMode mode);
+        void opTYA(AddressingMode mode);
+
+        // Arithmetic
+        void opADC(AddressingMode mode);
+        void opSBC(AddressingMode mode);
+        void opINC(AddressingMode mode);
+        void opDEC(AddressingMode mode);
+
+        // Register increments
+        void opINX(AddressingMode mode);
+        void opDEX(AddressingMode mode);
+        void opINY(AddressingMode mode);
+        void opDEY(AddressingMode mode);
             
         void opNOP(AddressingMode mode);
 
