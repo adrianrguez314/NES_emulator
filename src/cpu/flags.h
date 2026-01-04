@@ -3,6 +3,9 @@
 
 #include <cstdint>
 
+#undef OVERFLOW
+
+
 struct Flags {
     enum Flag : uint8_t {
         CARRY = 0,
