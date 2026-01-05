@@ -65,6 +65,15 @@ class CPU {
         void opDEX(AddressingMode mode);
         void opINY(AddressingMode mode);
         void opDEY(AddressingMode mode);
+
+        // Flags
+        void opCLC (AddressingMode mode);
+        void opCLD(AddressingMode mode);
+        void opCLI (AddressingMode mode);
+        void opCLV (AddressingMode mode);
+        void opSEC (AddressingMode mode);
+        void opSED (AddressingMode mode);
+        void opSEI (AddressingMode mode);
             
         void opNOP(AddressingMode mode);
 

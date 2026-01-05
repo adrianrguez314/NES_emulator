@@ -109,7 +109,19 @@ enum class Opcode : uint8_t {
     INX = 0xE8,
     DEX = 0xCA,
     INY = 0xC8,
-    DEY = 0x88
+    DEY = 0x88,
+
+    // =========================
+    // Flags Instructions
+    // =========================
+
+    CLC = 0x18,
+    CLD = 0xD8,
+    CLI = 0x58,
+    CLV = 0xB8,
+    SEC = 0x38,
+    SED = 0xF8,
+    SEI = 0x78,
 
 
 };
@@ -218,7 +230,15 @@ inline void initOpcodeTable() {
     OPCODE_TABLE[0xCA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opDEX };
     OPCODE_TABLE[0xC8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opINY };
     OPCODE_TABLE[0x88] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opDEY };
-}
 
+    // Flags instructions
+    OPCODE_TABLE[0x18] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLC };
+    OPCODE_TABLE[0xD8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLD };
+    OPCODE_TABLE[0x58] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLI };
+    OPCODE_TABLE[0xB8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLV };
+    OPCODE_TABLE[0x38] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSEC };
+    OPCODE_TABLE[0xF8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSED };
+    OPCODE_TABLE[0x78] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSEI };
+}
 
 #endif // opcodes_h
