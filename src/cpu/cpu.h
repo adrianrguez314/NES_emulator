@@ -28,8 +28,12 @@ class CPU {
             Indirect_X,
             Indirect_Y,
             Not_addressing,
-            };
+        };
         uint16_t getAddress(AddressingMode mode);
+
+        void setA(uint8_t v) { registers.A = v; }
+        void setX(uint8_t v) { registers.X = v; }
+        void setY(uint8_t v) { registers.Y = v; }
         uint8_t getRegister(char registerName) const;
 
         Flags& getFlags() { return registers.P; }
@@ -65,6 +69,11 @@ class CPU {
         void opDEX(AddressingMode mode);
         void opINY(AddressingMode mode);
         void opDEY(AddressingMode mode);
+
+        // Compare
+        void opCMP(AddressingMode mode);
+        void opCPX(AddressingMode mode);
+        void opCPY(AddressingMode mode);
 
         // Flags
         void opCLC (AddressingMode mode);

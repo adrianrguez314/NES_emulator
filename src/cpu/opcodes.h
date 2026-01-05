@@ -73,7 +73,7 @@ enum class Opcode : uint8_t {
     // Arithmetic Instructions
     // =========================
 
-    // ADC (Add with Carry)
+    // ADC - Add with Carry
     ADC_IMM  = 0x69,
     ADC_ZP   = 0x65,
     ADC_ZPX  = 0x75,
@@ -83,7 +83,7 @@ enum class Opcode : uint8_t {
     ADC_INX  = 0x61,
     ADC_INY  = 0x71,
 
-    // SBC (Subtract with Carry)
+    // SBC - Subtract with Carry
     SBC_IMM  = 0xE9,
     SBC_ZP   = 0xE5,
     SBC_ZPX  = 0xF5,
@@ -93,23 +93,47 @@ enum class Opcode : uint8_t {
     SBC_INX  = 0xE1,
     SBC_INY  = 0xF1,
 
-    // INC (Increment Memory)
+    // INC - Increment Memory
     INC_ZP   = 0xE6,
     INC_ZPX  = 0xF6,
     INC_ABS  = 0xEE,
     INC_ABSX = 0xFE,
 
-    // DEC (Decrement Memory)
+    // DEC - Decrement Memory
     DEC_ZP   = 0xC6,
     DEC_ZPX  = 0xD6,
     DEC_ABS  = 0xCE,
     DEC_ABSX = 0xDE,
 
-    // INX / DEX / INY / DEY (Implied)
+    // INX / DEX / INY / DEY - Implied
     INX = 0xE8,
     DEX = 0xCA,
     INY = 0xC8,
     DEY = 0x88,
+
+    // =========================
+    // Compare Instructions
+    // =========================
+
+    // CMP - Compare Accumulator
+    CMP_IMM   = 0xC9,   
+    CMP_ZP    = 0xC5,   
+    CMP_ZPX   = 0xD5,   
+    CMP_ABS   = 0xCD,   
+    CMP_ABSX  = 0xDD,  
+    CMP_ABSY  = 0xD9,   
+    CMP_INDX  = 0xC1,   
+    CMP_INDY  = 0xD1,   
+
+    // CPX - Compare X
+    CPX_IMM   = 0xE0,   
+    CPX_ZP    = 0xE4,   
+    CPX_ABS   = 0xEC,   
+
+    // CPY – Compare Y
+    CPY_IMM   = 0xC0,  
+    CPY_ZP    = 0xC4,   
+    CPY_ABS   = 0xCC,   
 
     // =========================
     // Flags Instructions
@@ -239,6 +263,26 @@ inline void initOpcodeTable() {
     OPCODE_TABLE[0x38] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSEC };
     OPCODE_TABLE[0xF8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSED };
     OPCODE_TABLE[0x78] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSEI };
+
+    // CMP – Compare Accumulator
+    OPCODE_TABLE[0xC9] = { CPU::AddressingMode::Immediate,   2, 2, &CPU::opCMP };
+    OPCODE_TABLE[0xC5] = { CPU::AddressingMode::ZeroPage,    2, 3, &CPU::opCMP };
+    OPCODE_TABLE[0xD5] = { CPU::AddressingMode::ZeroPage_X,  2, 4, &CPU::opCMP };
+    OPCODE_TABLE[0xCD] = { CPU::AddressingMode::Absolute,    3, 4, &CPU::opCMP };
+    OPCODE_TABLE[0xDD] = { CPU::AddressingMode::Absolute_X,  3, 4, &CPU::opCMP };
+    OPCODE_TABLE[0xD9] = { CPU::AddressingMode::Absolute_Y,  3, 4, &CPU::opCMP };
+    OPCODE_TABLE[0xC1] = { CPU::AddressingMode::Indirect_X,  2, 6, &CPU::opCMP };
+    OPCODE_TABLE[0xD1] = { CPU::AddressingMode::Indirect_Y,  2, 5, &CPU::opCMP };
+
+    // CPX – Compare X
+    OPCODE_TABLE[0xE0] = { CPU::AddressingMode::Immediate,   2, 2, &CPU::opCPX };
+    OPCODE_TABLE[0xE4] = { CPU::AddressingMode::ZeroPage,    2, 3, &CPU::opCPX };
+    OPCODE_TABLE[0xEC] = { CPU::AddressingMode::Absolute,    3, 4, &CPU::opCPX };
+
+    // CPY – Compare Y
+    OPCODE_TABLE[0xC0] = { CPU::AddressingMode::Immediate,   2, 2, &CPU::opCPY };
+    OPCODE_TABLE[0xC4] = { CPU::AddressingMode::ZeroPage,    2, 3, &CPU::opCPY };
+    OPCODE_TABLE[0xCC] = { CPU::AddressingMode::Absolute,    3, 4, &CPU::opCPY };
 }
 
 #endif // opcodes_h
