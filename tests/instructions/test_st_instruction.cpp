@@ -68,20 +68,21 @@ TEST(STInstructions, STA) {
     EXPECT_EQ(mem.read(0x3008), 0x66);
 
     cpu.reset();
+
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
     mem.write(0x0001, 0x77);
-    cpu.executeInstruction();  
+    cpu.executeInstruction();
 
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDX_IMM));
     mem.write(0x0003, 0x02);
-    cpu.executeInstruction();  
-
-    mem.write(0x0004, static_cast<uint8_t>(Opcode::STA_INX));
-    mem.write(0x0005, 0x04);      
-    mem.write(0x06, 0x50);        
-    mem.write(0x07, 0x60);      
     cpu.executeInstruction();
-    EXPECT_EQ(mem.read(0x6052), 0x77);  
+
+    mem.write(0x0006, 0x52); 
+    mem.write(0x0007, 0x60); 
+    mem.write(0x0004, static_cast<uint8_t>(Opcode::STA_INX));
+    mem.write(0x0005, 0x04);
+    cpu.executeInstruction();
+    EXPECT_EQ(mem.read(0x6052), 0x77);
 
     cpu.reset();
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
