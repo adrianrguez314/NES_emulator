@@ -123,7 +123,7 @@ TEST(LDInstructions, AbsoluteIndexed) {
     Memory mem;
     CPU cpu(mem);
 
-    mem.write(0x2030, 0x55); // 0x2020 + 0x10 = 0x2030
+    mem.write(0x2030, 0x55); 
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
     mem.write(0x0001, 0x10);
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDA_ABSX));
@@ -134,18 +134,18 @@ TEST(LDInstructions, AbsoluteIndexed) {
     EXPECT_EQ(cpu.getRegister('A'), 0x55);
 
     cpu.reset();
-    mem.write(0x2030, 0x66); // 0x2020 + 0x10 = 0x2030
+    mem.write(0x2030, 0x66); 
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_IMM));
     mem.write(0x0001, 0x10);
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDX_ABSY));
     mem.write_u16(0x0003, 0x2020);
-    cpu.executeInstruction(); // LDY
+    cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('Y'), 0x10);
-    cpu.executeInstruction(); // LDX_ABSY
+    cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('X'), 0x66);
 
     cpu.reset();
-    mem.write(0x2030, 0x77); // 0x2020 + 0x10 = 0x2030
+    mem.write(0x2030, 0x77); 
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
     mem.write(0x0001, 0x10);
     mem.write(0x0002, static_cast<uint8_t>(Opcode::LDY_ABSX));
