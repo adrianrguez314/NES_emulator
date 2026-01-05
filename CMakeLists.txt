@@ -7,10 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(include)
 
 file(GLOB CPU_SOURCES 
-    "src/CPU/main.cpp"
-    "src/CPU/*.cpp"
-    "src/CPU/instructions/*.cpp"
-    "src/Memory/*.cpp"
+    "src/cpu/main.cpp"
+    "src/cpu/*.cpp"
+    "src/cpu/instructions/*.cpp"
+    "src/memory/*.cpp"
 )
 
 message(STATUS "CPU Sources found: ${CPU_SOURCES}")
