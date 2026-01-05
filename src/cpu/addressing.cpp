@@ -34,6 +34,16 @@ uint16_t CPU::getAddress(AddressingMode mode) {
             return pos + registers.Y;
         }
 
+        case AddressingMode::Indirect: {
+            uint16_t ptr = mem.read_u16(registers.PC);
+            registers.PC++;
+
+            uint8_t low  = mem.read(ptr);
+            uint8_t high = mem.read((ptr & 0xFF00) | ((ptr + 1) & 0x00FF)); 
+
+            return static_cast<uint16_t>(high) << 8 | low;
+        }
+
         case AddressingMode::Indirect_X: {
             uint8_t base = mem.read(registers.PC);
             registers.PC++;
@@ -45,6 +55,7 @@ uint16_t CPU::getAddress(AddressingMode mode) {
 
             return static_cast<uint16_t>(high) << 8 | low;
         }
+
         case AddressingMode::Indirect_Y: {
             uint8_t base = mem.read(registers.PC);
             registers.PC++; 
@@ -54,7 +65,6 @@ uint16_t CPU::getAddress(AddressingMode mode) {
             
             uint16_t addr = (static_cast<uint16_t>(high) << 8 | low);
             return addr + registers.Y;
-
         }
         
         default:

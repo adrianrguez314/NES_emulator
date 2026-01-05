@@ -19,7 +19,18 @@ void CPU::reset() {
     registers.X = 0;
     registers.Y = 0;
     registers.PC = 0;
-    registers.status = 0xFD;
+    registers.SP = 0xFF;
+    registers.status = 0x24;
+}
+
+void CPU::pushStack (uint8_t value) {
+    mem.write(0x0100 + registers.SP, value);
+    registers.SP--;
+}
+
+uint8_t CPU::pullStack() {
+    registers.SP++;  
+    return mem.read(0x0100 + registers.SP);
 }
 
 void CPU::executeInstruction() {
@@ -42,6 +53,8 @@ uint8_t CPU::getRegister(char registerName) const {
             return registers.X;
         case 'Y': 
             return registers.Y;
+        case 'S':
+            return registers.SP;
         default:
             throw std:: invalid_argument("Invalid CPU register");
     }

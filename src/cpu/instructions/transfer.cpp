@@ -11,17 +11,9 @@ void CPU::opTAY(AddressingMode mode) {
     registers.P.updateZN(registers.Y);
 }
 
-void CPU::opTSX (AddressingMode mode) {
-    throw "Not implemented";
-}
-
 void CPU::opTXA (AddressingMode mode) {
     registers.A = registers.X;
     registers.P.updateZN(registers.A);
-}
-
-void CPU::opTXS (AddressingMode mode) {
-    throw "Not implemented";
 }
 
 void CPU::opTYA (AddressingMode mode) {

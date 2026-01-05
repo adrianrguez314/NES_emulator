@@ -64,16 +64,14 @@ enum class Opcode : uint8_t {
 
     TAX = 0xAA,
     TAY = 0xA8,
-    TSX = 0xBA,
     TXA = 0x8A,
-    TXS = 0x9A,
     TYA = 0x98,
 
     // =========================
     // Arithmetic Instructions
     // =========================
 
-    // ADC (Add with Carry)
+    // ADC - Add with Carry
     ADC_IMM  = 0x69,
     ADC_ZP   = 0x65,
     ADC_ZPX  = 0x75,
@@ -83,7 +81,7 @@ enum class Opcode : uint8_t {
     ADC_INX  = 0x61,
     ADC_INY  = 0x71,
 
-    // SBC (Subtract with Carry)
+    // SBC - Subtract with Carry
     SBC_IMM  = 0xE9,
     SBC_ZP   = 0xE5,
     SBC_ZPX  = 0xF5,
@@ -93,24 +91,89 @@ enum class Opcode : uint8_t {
     SBC_INX  = 0xE1,
     SBC_INY  = 0xF1,
 
-    // INC (Increment Memory)
+    // INC - Increment Memory
     INC_ZP   = 0xE6,
     INC_ZPX  = 0xF6,
     INC_ABS  = 0xEE,
     INC_ABSX = 0xFE,
 
-    // DEC (Decrement Memory)
+    // DEC - Decrement Memory
     DEC_ZP   = 0xC6,
     DEC_ZPX  = 0xD6,
     DEC_ABS  = 0xCE,
     DEC_ABSX = 0xDE,
 
-    // INX / DEX / INY / DEY (Implied)
+    // INX / DEX / INY / DEY - Implied
     INX = 0xE8,
     DEX = 0xCA,
     INY = 0xC8,
-    DEY = 0x88
+    DEY = 0x88,
 
+    // =========================
+    // Compare Instructions
+    // =========================
+
+    // CMP - Compare Accumulator
+    CMP_IMM   = 0xC9,   
+    CMP_ZP    = 0xC5,   
+    CMP_ZPX   = 0xD5,   
+    CMP_ABS   = 0xCD,   
+    CMP_ABSX  = 0xDD,  
+    CMP_ABSY  = 0xD9,   
+    CMP_INDX  = 0xC1,   
+    CMP_INDY  = 0xD1,   
+
+    // CPX - Compare X
+    CPX_IMM   = 0xE0,   
+    CPX_ZP    = 0xE4,   
+    CPX_ABS   = 0xEC,   
+
+    // CPY – Compare Y
+    CPY_IMM   = 0xC0,  
+    CPY_ZP    = 0xC4,   
+    CPY_ABS   = 0xCC,   
+
+     // =========================
+    // Jump / Subroutine / Interrupts
+    // =========================
+
+    // JMP – Jump
+    JMP_ABS = 0x4C,
+    JMP_IND = 0x6C,
+
+    // JSR – Jump to Subroutine
+    JSR = 0x20,
+
+    // RTS – Return from Subroutine
+    RTS = 0x60,
+
+    // BRK – Force Interrupt
+    BRK = 0x00,
+
+    // RTI – Return from Interrupt
+    RTI = 0x40,
+
+    // =========================
+    // Stack Instructions
+    // =========================
+    PHA = 0x48,
+    PLA = 0x68,
+    PHP = 0x08,
+    PLP = 0x28,
+    TXS = 0xBA,
+    TSX = 0x9A,
+
+    // =========================
+    // Flags Instructions
+    // =========================
+
+    CLC = 0x18,
+    CLD = 0xD8,
+    CLI = 0x58,
+    CLV = 0xB8,
+    SEC = 0x38,
+    SED = 0xF8,
+    SEI = 0x78,
 
 };
 
@@ -176,9 +239,7 @@ inline void initOpcodeTable() {
     // TRANSFER instructions
     OPCODE_TABLE[0xAA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTAX };
     OPCODE_TABLE[0xA8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTAY };
-    OPCODE_TABLE[0xBA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTSX };
     OPCODE_TABLE[0x8A] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTXA };
-    OPCODE_TABLE[0x9A] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTXS };
     OPCODE_TABLE[0x98] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTYA };
 
     // ADC 
@@ -218,7 +279,60 @@ inline void initOpcodeTable() {
     OPCODE_TABLE[0xCA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opDEX };
     OPCODE_TABLE[0xC8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opINY };
     OPCODE_TABLE[0x88] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opDEY };
-}
 
+    // Flags instructions
+    OPCODE_TABLE[0x18] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLC };
+    OPCODE_TABLE[0xD8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLD };
+    OPCODE_TABLE[0x58] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLI };
+    OPCODE_TABLE[0xB8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLV };
+    OPCODE_TABLE[0x38] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSEC };
+    OPCODE_TABLE[0xF8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSED };
+    OPCODE_TABLE[0x78] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSEI };
+
+    // CMP – Compare Accumulator
+    OPCODE_TABLE[0xC9] = { CPU::AddressingMode::Immediate,   2, 2, &CPU::opCMP };
+    OPCODE_TABLE[0xC5] = { CPU::AddressingMode::ZeroPage,    2, 3, &CPU::opCMP };
+    OPCODE_TABLE[0xD5] = { CPU::AddressingMode::ZeroPage_X,  2, 4, &CPU::opCMP };
+    OPCODE_TABLE[0xCD] = { CPU::AddressingMode::Absolute,    3, 4, &CPU::opCMP };
+    OPCODE_TABLE[0xDD] = { CPU::AddressingMode::Absolute_X,  3, 4, &CPU::opCMP };
+    OPCODE_TABLE[0xD9] = { CPU::AddressingMode::Absolute_Y,  3, 4, &CPU::opCMP };
+    OPCODE_TABLE[0xC1] = { CPU::AddressingMode::Indirect_X,  2, 6, &CPU::opCMP };
+    OPCODE_TABLE[0xD1] = { CPU::AddressingMode::Indirect_Y,  2, 5, &CPU::opCMP };
+
+    // CPX – Compare X
+    OPCODE_TABLE[0xE0] = { CPU::AddressingMode::Immediate,   2, 2, &CPU::opCPX };
+    OPCODE_TABLE[0xE4] = { CPU::AddressingMode::ZeroPage,    2, 3, &CPU::opCPX };
+    OPCODE_TABLE[0xEC] = { CPU::AddressingMode::Absolute,    3, 4, &CPU::opCPX };
+
+    // CPY – Compare Y
+    OPCODE_TABLE[0xC0] = { CPU::AddressingMode::Immediate,   2, 2, &CPU::opCPY };
+    OPCODE_TABLE[0xC4] = { CPU::AddressingMode::ZeroPage,    2, 3, &CPU::opCPY };
+    OPCODE_TABLE[0xCC] = { CPU::AddressingMode::Absolute,    3, 4, &CPU::opCPY };
+
+    // JMP – Jump
+    OPCODE_TABLE[0x4C] = { CPU::AddressingMode::Absolute,   3, 3, &CPU::opJMP };
+    OPCODE_TABLE[0x6C] = { CPU::AddressingMode::Indirect,   3, 5, &CPU::opJMP };
+
+    // JSR – Jump to Subroutine
+    OPCODE_TABLE[0x20] = { CPU::AddressingMode::Absolute,   3, 6, &CPU::opJSR };
+
+    // RTS – Return from Subroutine
+    OPCODE_TABLE[0x60] = { CPU::AddressingMode::Not_addressing, 1, 6, &CPU::opRTS };
+
+    // BRK – Force Interrupt
+    OPCODE_TABLE[0x00] = { CPU::AddressingMode::Not_addressing, 1, 7, &CPU::opBRK };
+
+    // RTI – Return from Interrupt
+    OPCODE_TABLE[0x40] = { CPU::AddressingMode::Not_addressing, 1, 6, &CPU::opRTI };
+
+    // Stack instructions - implied 
+    OPCODE_TABLE[0x48] = { CPU::AddressingMode::Not_addressing, 1, 3, &CPU::opPHA };
+    OPCODE_TABLE[0x68] = { CPU::AddressingMode::Not_addressing, 1, 4, &CPU::opPLA };
+    OPCODE_TABLE[0x08] = { CPU::AddressingMode::Not_addressing, 1, 3, &CPU::opPHP };
+    OPCODE_TABLE[0x28] = { CPU::AddressingMode::Not_addressing, 1, 4, &CPU::opPLP };
+    OPCODE_TABLE[0xBA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTSX };
+    OPCODE_TABLE[0x9A] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTXS };
+
+}
 
 #endif // opcodes_h
