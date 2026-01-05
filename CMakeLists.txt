@@ -7,11 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(include)
 
 file(GLOB CPU_SOURCES 
+    "src/CPU/main.cpp"
     "src/CPU/*.cpp"
     "src/CPU/instructions/*.cpp"
     "src/Memory/*.cpp"
 )
 
+message(STATUS "CPU Sources found: ${CPU_SOURCES}")
 add_library(emulator_lib ${CPU_SOURCES})
 
 include(FetchContent)
