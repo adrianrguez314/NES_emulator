@@ -5,19 +5,24 @@ void CPU::opADC(AddressingMode mode) {
     uint16_t addr = getAddress(mode);
     uint8_t value = mem.read(addr);
 
-    uint16_t result = registers.A + value + (Flags::isSet(registers.status,Flags::CARRY) ? 1 : 0);
-    // Flags::updateCarry(registers.P, result);
+    uint16_t result = registers.A + value + (registers.P.isSet(Flags::CARRY) ? 1 : 0);
     registers.A = static_cast<uint8_t>(result);
+
+    registers.P.updateCarry(result);
+    registers.P.updateOverflow(registers.A, value, result);
+    registers.P.updateZN(registers.A);
 }
 
 void CPU::opSBC(AddressingMode mode) {
     uint16_t addr = getAddress(mode);
     uint8_t value = mem.read(addr);
 
-    uint16_t result = registers.A + (uint8_t)(~value) + (Flags::isSet(registers.status,Flags::CARRY) ? 1 : 0);
-
-    //updateCarry(registers.P, result);
+    uint16_t result = registers.A + static_cast<uint8_t>(~value) + (registers.P.isSet(Flags::CARRY) ? 1 : 0);
     registers.A = static_cast<uint8_t>(result);
+
+    registers.P.updateCarry(result);
+    registers.P.updateOverflow(registers.A, ~value, result);
+    registers.P.updateZN(registers.A);
 }
 
 

@@ -5,6 +5,7 @@
 #include <functional>
 
 #include "../memory/memory.h"
+#include "flags.h"
 
 class CPU {
 
@@ -30,6 +31,9 @@ class CPU {
             };
         uint16_t getAddress(AddressingMode mode);
         uint8_t getRegister(char registerName) const;
+
+        Flags& getFlags() { return registers.P; }
+        const Flags& getFlags() const { return registers.P; }
 
 
         // Load Register
@@ -71,6 +75,8 @@ class CPU {
                 uint8_t Y;      // Y Register
                 uint16_t PC;     // Program Counter
                 uint8_t status; // Status Register
+
+                Flags P;
             } registers;
 
 };

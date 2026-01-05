@@ -87,11 +87,11 @@ TEST(ArithmeticInstructions, ADC_WrapAround) {
     EXPECT_EQ(cpu.getRegister('A'), 0x01);
 }
 
-/*TEST(ArithmeticInstructions, SBC_Immediate) {
+TEST(ArithmeticInstructions, SBC_Immediate) {
     Memory mem;
     CPU cpu(mem);
 
-    cpu.setFlag(Flags::CARRY, true);
+    cpu.getFlags().set(Flags::CARRY); 
 
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
     mem.write(0x0001, 0x10);
@@ -108,7 +108,7 @@ TEST(ArithmeticInstructions, SBC_WrapAround) {
     Memory mem;
     CPU cpu(mem);
 
-    cpu.setFlag(Flags::CARRY, true);
+    cpu.getFlags().set(Flags::CARRY);  
 
     mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
     mem.write(0x0001, 0x00);
@@ -119,6 +119,7 @@ TEST(ArithmeticInstructions, SBC_WrapAround) {
     cpu.executeInstruction();
 
     EXPECT_EQ(cpu.getRegister('A'), 0xFF);
-}*/
+}
+
 
 
