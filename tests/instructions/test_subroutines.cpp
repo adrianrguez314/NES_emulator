@@ -1,0 +1,91 @@
+#include <gtest/gtest.h>
+
+#include "../../src/cpu/cpu.h"
+#include "../../src/cpu/opcodes.h"
+
+class SubroutineInstructions : public ::testing::Test {
+protected:
+    Memory mem;
+    CPU cpu{mem};
+
+    void SetUp() override {
+        cpu.reset();
+        cpu.setPC(0x8000);
+    }
+
+    uint8_t topStack() {
+        return mem.read(0x0100 + cpu.getRegister('S') + 1);
+    }
+
+    uint8_t stackPeek(uint8_t offset = 0) {
+        return mem.read(0x0100 + cpu.getRegister('S') + 1 + offset);
+    }
+};
+
+TEST_F(SubroutineInstructions, JSR_pushes_return_and_jumps) {
+    mem.write(0x8000, static_cast<uint8_t>(Opcode::JSR));
+    mem.write(0x8001, 0x00);
+    mem.write(0x8002, 0x90);
+
+    uint8_t initialSP = cpu.getRegister('S');
+
+    cpu.executeInstruction();
+    EXPECT_EQ(cpu.getPC(), 0x9000);
+
+    uint16_t returnAddr = 0x8002;
+
+    uint8_t low  = mem.read(0x0100 + initialSP);
+    uint8_t high = mem.read(0x0100 + initialSP - 1);
+
+    EXPECT_EQ(low,  returnAddr & 0xFF);
+    EXPECT_EQ(high, (returnAddr >> 8) & 0xFF);
+}
+
+TEST_F(SubroutineInstructions, RTS_pulls_return_and_continues) {
+    cpu.setPC(0x9000);
+
+    cpu.pushStack(0x80); 
+    cpu.pushStack(0x02); 
+
+    mem.write(0x9000, static_cast<uint8_t>(Opcode::RTS));
+
+    cpu.executeInstruction();
+    EXPECT_EQ(cpu.getPC(), 0x8003);
+}
+
+TEST_F(SubroutineInstructions, BRK_pushes_pc_and_status_and_jumps) {
+    cpu.setPC(0x2000);
+    cpu.getFlags().raw(0b01010101); 
+
+    mem.write(0xFFFE, 0x34); 
+    mem.write(0xFFFF, 0x12); 
+
+    cpu.opBRK(CPU::AddressingMode::Immediate);
+
+    uint8_t status = stackPeek(0);
+    uint8_t pcl    = stackPeek(1);    
+    uint8_t pch    = stackPeek(2);
+
+    uint16_t returnAddr = 0x2001;
+    uint8_t expectedStatus = 0b01010101 | (1 << Flags::BREAK_COMMAND) | (1 << Flags::UNUSED);
+
+    EXPECT_EQ(pcl, returnAddr & 0xFF);
+    EXPECT_EQ(pch, (returnAddr >> 8) & 0xFF);
+    EXPECT_EQ(status, expectedStatus);
+    EXPECT_EQ(cpu.getPC(), 0x1234);
+    EXPECT_TRUE(cpu.getFlags().isSet(Flags::INTERRUPT_DISABLE));
+}
+
+TEST_F(SubroutineInstructions, RTI_restores_pc_and_status) {
+    uint16_t savedPC = 0x3456;
+    uint8_t savedStatus = 0b10101010;
+
+    cpu.setSP(0xFF);
+    cpu.pushStack((savedPC >> 8) & 0xFF); 
+    cpu.pushStack(savedPC & 0xFF);       
+    cpu.pushStack(savedStatus);         
+
+    cpu.opRTI(CPU::AddressingMode::Immediate);
+    EXPECT_EQ(cpu.getPC(), savedPC);
+    EXPECT_EQ(cpu.getFlags().raw(), savedStatus);
+}
