@@ -28,7 +28,7 @@ jobs:
       - name: Run tests and generate XML
         run: |
           cd build
-          ./tests --gtest_output=xml:results.xml
+          ./unit_tests --gtest_output=xml:results.xml
 
       - name: Generate HTML report with Allure
         run: |
