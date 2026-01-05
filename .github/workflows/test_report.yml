@@ -1,0 +1,41 @@
+name: Generate Test Report
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ nodejs npm
+          npm install -g allure-commandline
+
+      - name: Create build and compile
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+          cmake --build .
+
+      - name: Run tests and generate XML
+        run: |
+          cd build
+          ./tests --gtest_output=xml:results.xml
+
+      - name: Generate HTML report with Allure
+        run: |
+          allure generate build/ --clean -o build/report
+
+      - name: Publish HTML report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/report

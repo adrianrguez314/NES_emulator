@@ -1,36 +1,35 @@
-#include "test_helpers.h"
-#include "test_flags.h"
+#include <gtest/gtest.h>
+#include "../src/cpu/cpu.h"
+#include "../src/cpu/flags.h"
 
-void testFlags() {
+TEST(Flags, SetClearCarry) {
+    Flags P;
 
-    PRINT_TEST_TITLE("TEST: Flags");
+    P.set(Flags::CARRY);
+    EXPECT_TRUE(P.isSet(Flags::CARRY));
 
-    uint8_t status = 0;
+    P.clear(Flags::CARRY);
+    EXPECT_FALSE(P.isSet(Flags::CARRY));
+}
 
-    Flags::set(status, Flags::CARRY);
-    EXPECT_EQ(Flags::isSet(status, Flags::CARRY));
+TEST(Flags, ZeroNegativeFlags) {
+    Flags P;
 
-    Flags::clear(status, Flags::CARRY);
-    EXPECT_EQ(!Flags::isSet(status, Flags::CARRY));
+    P.updateZN(0x00);
+    EXPECT_TRUE(P.isSet(Flags::ZERO));
+    EXPECT_FALSE(P.isSet(Flags::NEGATIVE));
 
-    // Zero and Negative flag tests
-    status = 0;
-    Flags::updateZN(status, 0x00);
-    EXPECT_EQ(Flags::isSet(status, Flags::ZERO));
-    EXPECT_EQ(!Flags::isSet(status, Flags::NEGATIVE));
+    P.updateZN(0x80);
+    EXPECT_FALSE(P.isSet(Flags::ZERO));
+    EXPECT_TRUE(P.isSet(Flags::NEGATIVE));
+}
 
-    status = 0;
-    Flags::updateZN(status, 0x80);
-    EXPECT_EQ(!Flags::isSet(status, Flags::ZERO));
-    EXPECT_EQ(Flags::isSet(status, Flags::NEGATIVE));
+TEST(Flags, OverflowFlag) {
+    Flags P;
 
-    // Overflow flag test
-    status = 0;
-    Flags::updateOverflow(status, 0x50, 0x50, 0xA0);
-    EXPECT_EQ(Flags::isSet(status, Flags::OVERFLOW));
+    P.updateOverflow(0x50, 0x50, 0xA0);
+    EXPECT_TRUE(P.isSet(Flags::OVERFLOW));
 
-    status = 0;
-    Flags::updateOverflow(status, 0x10, 0x10, 0x20);
-    EXPECT_EQ(!Flags::isSet(status, Flags::OVERFLOW));
-
+    P.updateOverflow(0x10, 0x10, 0x20);
+    EXPECT_FALSE(P.isSet(Flags::OVERFLOW));
 }

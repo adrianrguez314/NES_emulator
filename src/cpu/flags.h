@@ -3,7 +3,13 @@
 
 #include <cstdint>
 
-struct Flags {
+#undef OVERFLOW
+
+
+#include <cstdint>
+
+class Flags {
+public:
     enum Flag : uint8_t {
         CARRY = 0,
         ZERO = 1,
@@ -15,31 +21,32 @@ struct Flags {
         NEGATIVE = 7
     };
 
-    static inline void set(uint8_t &p, Flag f) {
-        p |= (1 << f);
+    Flags() : p(0x24) {} 
+
+    void set(Flag f)    { p |=  (1 << f); }
+    void clear(Flag f)  { p &= ~(1 << f); }
+    bool isSet(Flag f) const { return (p & (1 << f)) != 0; }
+
+    uint8_t raw() const { return p; }
+    void raw(uint8_t v) { p = v; }
+
+    void updateZN(uint8_t v) {
+        (v == 0) ? set(ZERO) : clear(ZERO);
+        (v & 0x80) ? set(NEGATIVE) : clear(NEGATIVE);
     }
 
-    static inline void clear(uint8_t &p, Flag f) {
-        p &= ~(1 << f);
+    void updateCarry(uint16_t r) {
+        (r > 0xFF) ? set(CARRY) : clear(CARRY);
     }
 
-     static inline bool isSet(const uint8_t &p, Flag f) {
-          return (p & (1 << f)) != 0;
-     }
-
-    static inline void updateZN(uint8_t &p, uint8_t v) {
-        (v == 0) ? set(p, ZERO) : clear(p, ZERO);
-        (v & 0x80) ? set(p, NEGATIVE) : clear(p, NEGATIVE);
-    }
-
-    static inline void updateCarry(uint8_t &p, uint16_t r) {
-        (r > 0xFF) ? set(p, CARRY) : clear(p, CARRY);
-    }
-
-    static inline void updateOverflow(uint8_t &p, uint8_t a, uint8_t b, uint8_t r) {
+    void updateOverflow(uint8_t a, uint8_t b, uint8_t r) {
         ((~(a ^ b) & (a ^ r)) & 0x80)
-            ? set(p, OVERFLOW)
-            : clear(p, OVERFLOW);
+            ? set(OVERFLOW)
+            : clear(OVERFLOW);
     }
+
+private:
+    uint8_t p;
 };
+
 #endif // flags_h

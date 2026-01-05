@@ -19,7 +19,7 @@ void CPU::reset() {
     registers.X = 0;
     registers.Y = 0;
     registers.PC = 0;
-    registers.status = 0;
+    registers.status = 0xFD;
 }
 
 void CPU::executeInstruction() {
