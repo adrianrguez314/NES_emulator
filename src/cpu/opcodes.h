@@ -64,9 +64,7 @@ enum class Opcode : uint8_t {
 
     TAX = 0xAA,
     TAY = 0xA8,
-    TSX = 0xBA,
     TXA = 0x8A,
-    TXS = 0x9A,
     TYA = 0x98,
 
     // =========================
@@ -135,6 +133,36 @@ enum class Opcode : uint8_t {
     CPY_ZP    = 0xC4,   
     CPY_ABS   = 0xCC,   
 
+     // =========================
+    // Jump / Subroutine / Interrupts
+    // =========================
+
+    // JMP – Jump
+    JMP_ABS = 0x4C,
+    JMP_IND = 0x6C,
+
+    // JSR – Jump to Subroutine
+    JSR = 0x20,
+
+    // RTS – Return from Subroutine
+    RTS = 0x60,
+
+    // BRK – Force Interrupt
+    BRK = 0x00,
+
+    // RTI – Return from Interrupt
+    RTI = 0x40,
+
+    // =========================
+    // Stack Instructions
+    // =========================
+    PHA = 0x48,
+    PLA = 0x68,
+    PHP = 0x08,
+    PLP = 0x28,
+    TXS = 0xBA,
+    TSX = 0x9A,
+
     // =========================
     // Flags Instructions
     // =========================
@@ -146,7 +174,6 @@ enum class Opcode : uint8_t {
     SEC = 0x38,
     SED = 0xF8,
     SEI = 0x78,
-
 
 };
 
@@ -212,9 +239,7 @@ inline void initOpcodeTable() {
     // TRANSFER instructions
     OPCODE_TABLE[0xAA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTAX };
     OPCODE_TABLE[0xA8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTAY };
-    OPCODE_TABLE[0xBA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTSX };
     OPCODE_TABLE[0x8A] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTXA };
-    OPCODE_TABLE[0x9A] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTXS };
     OPCODE_TABLE[0x98] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTYA };
 
     // ADC 
@@ -283,6 +308,31 @@ inline void initOpcodeTable() {
     OPCODE_TABLE[0xC0] = { CPU::AddressingMode::Immediate,   2, 2, &CPU::opCPY };
     OPCODE_TABLE[0xC4] = { CPU::AddressingMode::ZeroPage,    2, 3, &CPU::opCPY };
     OPCODE_TABLE[0xCC] = { CPU::AddressingMode::Absolute,    3, 4, &CPU::opCPY };
+
+    // JMP – Jump
+    OPCODE_TABLE[0x4C] = { CPU::AddressingMode::Absolute,   3, 3, &CPU::opJMP };
+    OPCODE_TABLE[0x6C] = { CPU::AddressingMode::Indirect,   3, 5, &CPU::opJMP };
+
+    // JSR – Jump to Subroutine
+    OPCODE_TABLE[0x20] = { CPU::AddressingMode::Absolute,   3, 6, &CPU::opJSR };
+
+    // RTS – Return from Subroutine
+    OPCODE_TABLE[0x60] = { CPU::AddressingMode::Not_addressing, 1, 6, &CPU::opRTS };
+
+    // BRK – Force Interrupt
+    OPCODE_TABLE[0x00] = { CPU::AddressingMode::Not_addressing, 1, 7, &CPU::opBRK };
+
+    // RTI – Return from Interrupt
+    OPCODE_TABLE[0x40] = { CPU::AddressingMode::Not_addressing, 1, 6, &CPU::opRTI };
+
+    // Stack instructions - implied 
+    OPCODE_TABLE[0x48] = { CPU::AddressingMode::Not_addressing, 1, 3, &CPU::opPHA };
+    OPCODE_TABLE[0x68] = { CPU::AddressingMode::Not_addressing, 1, 4, &CPU::opPLA };
+    OPCODE_TABLE[0x08] = { CPU::AddressingMode::Not_addressing, 1, 3, &CPU::opPHP };
+    OPCODE_TABLE[0x28] = { CPU::AddressingMode::Not_addressing, 1, 4, &CPU::opPLP };
+    OPCODE_TABLE[0xBA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTSX };
+    OPCODE_TABLE[0x9A] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTXS };
+
 }
 
 #endif // opcodes_h
