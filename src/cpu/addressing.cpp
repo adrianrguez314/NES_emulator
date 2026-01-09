@@ -66,10 +66,6 @@ uint16_t CPU::getAddress(AddressingMode mode) {
             uint16_t addr = (static_cast<uint16_t>(high) << 8 | low);
             return addr + registers.Y;
         }
-
-        case AddressingMode::Accumulator: {
-            return 0;
-        }
         
         default:
             throw std::runtime_error("Addressing mode not implemented");
