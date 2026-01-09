@@ -9,7 +9,9 @@ void CPU::opASL(AddressingMode mode) {
     (value & 0x80) ? registers.P.set(Flags::CARRY) : registers.P.clear(Flags::CARRY);
     value <<= 1;
 
-    target ? (*target = value) : mem.write(addr, value);
+    if (target) *target = value;
+    else mem.write(addr, value);
+
     registers.P.updateZN(value);
 }
 
@@ -21,7 +23,9 @@ void CPU::opLSR(AddressingMode mode) {
     (value & 0x01) ? registers.P.set(Flags::CARRY) : registers.P.clear(Flags::CARRY);
     value >>= 1;
 
-    target ? (*target = value) : mem.write(addr, value);
+    if (target) *target = value;
+    else mem.write(addr, value);
+
     registers.P.updateZN(value);
 }
 
@@ -34,7 +38,9 @@ void CPU::opROL(AddressingMode mode) {
     (value & 0x80) ? registers.P.set(Flags::CARRY) : registers.P.clear(Flags::CARRY);
     value = (value << 1) | oldCarry;
 
-    target ? (*target = value) : mem.write(addr, value);
+    if (target) *target = value;
+    else mem.write(addr, value);
+
     registers.P.updateZN(value);
 }
 
@@ -47,6 +53,8 @@ void CPU::opROR(AddressingMode mode) {
     (value & 0x01) ? registers.P.set(Flags::CARRY) : registers.P.clear(Flags::CARRY);
     value = (value >> 1) | oldCarry;
 
-    target ? (*target = value) : mem.write(addr, value);
+    if (target) *target = value;
+    else mem.write(addr, value);
+    
     registers.P.updateZN(value);
 }
