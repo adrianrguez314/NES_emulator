@@ -24,15 +24,11 @@ uint16_t CPU::getAddress(AddressingMode mode) {
         case AddressingMode::Absolute:
             return mem.read_u16(registers.PC);
 
-        case AddressingMode::Absolute_X: {
-            uint16_t pos = mem.read_u16(registers.PC);
-            return pos + registers.X;
-        }
-        
-        case AddressingMode::Absolute_Y: {
-            uint16_t pos = mem.read_u16(registers.PC);
-            return pos + registers.Y;
-        }
+        case AddressingMode::Absolute_X:
+            return mem.read_u16(registers.PC) + registers.X;
+
+        case AddressingMode::Absolute_Y:
+            return mem.read_u16(registers.PC) + registers.Y;
 
         case AddressingMode::Indirect: {
             uint16_t ptr = mem.read_u16(registers.PC);
@@ -46,25 +42,25 @@ uint16_t CPU::getAddress(AddressingMode mode) {
 
         case AddressingMode::Indirect_X: {
             uint8_t base = mem.read(registers.PC);
-            registers.PC++;
-            
-            uint8_t ptr = (base + registers.X) & 0xFF;  
 
+            uint8_t ptr = (base + registers.X) & 0xFF;  
             uint8_t low  = mem.read(ptr);               
             uint8_t high = mem.read((ptr + 1) & 0xFF);  
-
             return static_cast<uint16_t>(high) << 8 | low;
         }
 
         case AddressingMode::Indirect_Y: {
             uint8_t base = mem.read(registers.PC);
-            registers.PC++; 
 
             uint8_t low  = mem.read(base);               
-            uint8_t high = mem.read((base + 1) % 0xFF);
-            
+            uint8_t high = mem.read((base + 1) & 0xFF);
             uint16_t addr = (static_cast<uint16_t>(high) << 8 | low);
             return addr + registers.Y;
+        }
+
+        case AddressingMode::Relative: {
+            int8_t offset = (int8_t)mem.read(registers.PC);
+            return (registers.PC + 1) + offset;
         }
         
         default:

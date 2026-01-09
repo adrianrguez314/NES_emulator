@@ -29,6 +29,7 @@ class CPU {
             Indirect_X,
             Indirect_Y,
             Accumulator,
+            Relative,
             Not_addressing,
         };
         uint16_t getAddress(AddressingMode mode);
@@ -117,6 +118,17 @@ class CPU {
         void opLSR(AddressingMode mode);
         void opROL(AddressingMode mode);
         void opROR(AddressingMode mode);
+
+        // Branch
+        void opBPL(AddressingMode mode);
+        void opBMI (AddressingMode mode);
+        void opBVC (AddressingMode mode);
+        void opBVS (AddressingMode mode);
+        void opBCC (AddressingMode mode);
+        void opBCS (AddressingMode mode);
+        void opBNE (AddressingMode mode);
+        void opBEQ (AddressingMode mode);
+        
 
         // NOT
         void opNOP(AddressingMode mode);

@@ -47,6 +47,8 @@ namespace Ops {
     constexpr uint8_t PHA = 0x48, PLA = 0x68, PHP = 0x08, PLP = 0x28;
     
     constexpr uint8_t CLC = 0x18, CLD = 0xD8, CLI = 0x58, CLV = 0xB8, SEC = 0x38, SED = 0xF8, SEI = 0x78;
+
+    constexpr uint8_t BPL = 0x10, BMI = 0x30, BVC = 0x50, BVS = 0x70, BCC = 0x90, BCS = 0xB0, BNE = 0xD0, BEQ = 0xF0;
 }
 
 struct Instruction {
@@ -243,6 +245,16 @@ inline void initOpcodeTable() {
     reg(Ops::SEC, AM::Not_addressing, 1, 2, &CPU::opSEC);
     reg(Ops::SED, AM::Not_addressing, 1, 2, &CPU::opSED);
     reg(Ops::SEI, AM::Not_addressing, 1, 2, &CPU::opSEI);
+
+    // --- Branch ---
+    reg(Ops::BPL, AM::Relative, 2, 2, &CPU::opBPL);
+    reg(Ops::BMI, AM::Relative, 2, 2, &CPU::opBMI);
+    reg(Ops::BVC, AM::Relative, 2, 2, &CPU::opBVC);
+    reg(Ops::BVS, AM::Relative, 2, 2, &CPU::opBVS);
+    reg(Ops::BCC, AM::Relative, 2, 2, &CPU::opBCC);
+    reg(Ops::BCS, AM::Relative, 2, 2, &CPU::opBCS);
+    reg(Ops::BNE, AM::Relative, 2, 2, &CPU::opBNE);
+    reg(Ops::BEQ, AM::Relative, 2, 2, &CPU::opBEQ);
 }
 
 #endif // OPCODES_H
