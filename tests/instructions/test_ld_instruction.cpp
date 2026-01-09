@@ -9,19 +9,19 @@ TEST(LDInstructions, Immediate) {
     Memory mem;
     CPU cpu(mem);
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDA_IMM));
     mem.write(0x0001, 0x42);
     cpu.reset();
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('A'), 0x42); 
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
     mem.write(0x0001, 0x10);
     cpu.reset();
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('X'), 0x10);
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDY_IMM));
     mem.write(0x0001, 0x55);
     cpu.reset();
     cpu.executeInstruction();
@@ -33,21 +33,21 @@ TEST(LDInstructions, ZeroPage) {
     CPU cpu(mem);
 
     mem.write(0x0010, 0x65);
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_ZP));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDA_ZP));
     mem.write(0x0001, 0x10);
     cpu.reset();
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('A'), 0x65);
 
     mem.write(0x0010, 0x77);
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_ZP));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDX_ZP));
     mem.write(0x0001, 0x10);
     cpu.reset();
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('X'), 0x77);
 
     mem.write(0x0010, 0x88);
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_ZP));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDY_ZP));
     mem.write(0x0001, 0x10);
     cpu.reset();
     cpu.executeInstruction();
@@ -60,9 +60,9 @@ TEST(LDInstructions, ZeroPageIndexed) {
 
     
     mem.write(0x0090, 0x42);  
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
     mem.write(0x0001, 0x10);
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::LDA_ZPX));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::LDA_ZPX));
     mem.write(0x0003, 0x80);
     cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('X'), 0x10);
@@ -71,9 +71,9 @@ TEST(LDInstructions, ZeroPageIndexed) {
 
     cpu.reset();
     mem.write(0x0090, 0x42);
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDY_IMM));
     mem.write(0x0001, 0x10);
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::LDX_ZPY));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::LDX_ZPY));
     mem.write(0x0003, 0x80);
     cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('Y'), 0x10);
@@ -82,9 +82,9 @@ TEST(LDInstructions, ZeroPageIndexed) {
 
     cpu.reset();
     mem.write(0x0090, 0x42);
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
     mem.write(0x0001, 0x10);
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::LDY_ZPX));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::LDY_ZPX));
     mem.write(0x0003, 0x80);
     cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('X'), 0x10);
@@ -98,21 +98,21 @@ TEST(LDInstructions, Absolute) {
     CPU cpu(mem);
 
     mem.write(0x1255, 0x88);
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_ABS));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDA_ABS));
     mem.write_u16(0x0001, 0x1255);
     cpu.reset();
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('A'), 0x88);
 
     mem.write(0x1300, 0x77);
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_ABS));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDX_ABS));
     mem.write_u16(0x0001, 0x1300);
     cpu.reset();
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('X'), 0x77);
 
     mem.write(0x1400, 0x66);
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_ABS));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDY_ABS));
     mem.write_u16(0x0001, 0x1400);
     cpu.reset();
     cpu.executeInstruction();
@@ -124,9 +124,9 @@ TEST(LDInstructions, AbsoluteIndexed) {
     CPU cpu(mem);
 
     mem.write(0x2030, 0x55); 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
     mem.write(0x0001, 0x10);
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::LDA_ABSX));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::LDA_ABSX));
     mem.write_u16(0x0003, 0x2020);
     cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('X'), 0x10);
@@ -135,9 +135,9 @@ TEST(LDInstructions, AbsoluteIndexed) {
 
     cpu.reset();
     mem.write(0x2030, 0x66); 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDY_IMM));
     mem.write(0x0001, 0x10);
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::LDX_ABSY));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::LDX_ABSY));
     mem.write_u16(0x0003, 0x2020);
     cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('Y'), 0x10);
@@ -146,9 +146,9 @@ TEST(LDInstructions, AbsoluteIndexed) {
 
     cpu.reset();
     mem.write(0x2030, 0x77); 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
     mem.write(0x0001, 0x10);
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::LDY_ABSX));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::LDY_ABSX));
     mem.write_u16(0x0003, 0x2020);
     cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('X'), 0x10);
@@ -160,11 +160,11 @@ TEST(LDInstructions, IndirectX) {
     Memory mem;
     CPU cpu(mem);
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
     mem.write(0x0001, 0x04);
     cpu.executeInstruction();
 
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::LDA_INX));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::LDA_INX));
     mem.write(0x0003, 0x02);
 
     mem.write(0x06, 0x10);
@@ -179,12 +179,12 @@ TEST(LDInstructions, IndirectY) {
     Memory mem;
     CPU cpu(mem);
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDY_IMM));
     mem.write(0x0001, 0x05);
     cpu.reset();
     cpu.executeInstruction();
 
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::LDA_INY));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::LDA_INY));
     mem.write(0x0003, 0x10);
 
     mem.write(0x10, 0x20);
