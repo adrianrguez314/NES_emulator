@@ -2,7 +2,7 @@
 #define OPCODES_H
 
 #include <cstdint>
-#include <algorithm> 
+#include <algorithm>
 #include "cpu.h" 
 
 namespace Ops {

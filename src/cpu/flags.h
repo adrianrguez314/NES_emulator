@@ -45,6 +45,12 @@ public:
             : clear(OVERFLOW);
     }
 
+    void updateBIT(uint8_t accum, uint8_t memValue) {
+    ((accum & memValue) == 0) ? set(ZERO) : clear(ZERO);
+    (memValue & 0x80) ? set(NEGATIVE) : clear(NEGATIVE);
+    (memValue & 0x40) ? set(OVERFLOW) : clear(OVERFLOW);
+}
+
 private:
     uint8_t p;
 };
