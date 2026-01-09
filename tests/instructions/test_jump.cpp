@@ -3,7 +3,7 @@
 #include "../../src/cpu/opcodes.h"
 
 struct JumpTestCase {
-    Opcode opcode;        
+    uint8_t opcode;        
     CPU::AddressingMode mode;
     uint16_t baseAddr;    
     uint16_t expectedPC;  
@@ -49,10 +49,10 @@ INSTANTIATE_TEST_SUITE_P(
     JumpTests,
     JumpInstructions,
     ::testing::Values(
-        JumpTestCase{Opcode::JMP_ABS, CPU::AddressingMode::Absolute, 0x1234, 0x1234, "JMP_ABS_basic"},
-        JumpTestCase{Opcode::JMP_IND, CPU::AddressingMode::Indirect, 0x2000, 0x3456, "JMP_IND_basic"},
-        JumpTestCase{Opcode::JMP_IND, CPU::AddressingMode::Indirect, 0x30FF, 0x78AB, "JMP_IND_bug"},
-        JumpTestCase{Opcode::JSR, CPU::AddressingMode::Absolute, 0x4000, 0x4000, "JSR_ABS_basic"}
+        JumpTestCase{Ops::JMP_ABS, CPU::AddressingMode::Absolute, 0x1234, 0x1234, "JMP_ABS_basic"},
+        JumpTestCase{Ops::JMP_IND, CPU::AddressingMode::Indirect, 0x2000, 0x3456, "JMP_IND_basic"},
+        JumpTestCase{Ops::JMP_IND, CPU::AddressingMode::Indirect, 0x30FF, 0x78AB, "JMP_IND_bug"},
+        JumpTestCase{Ops::JSR, CPU::AddressingMode::Absolute, 0x4000, 0x4000, "JSR_ABS_basic"}
     ),
     [](const ::testing::TestParamInfo<JumpTestCase>& info) {
         return std::string(info.param.name);

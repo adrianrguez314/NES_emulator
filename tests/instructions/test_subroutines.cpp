@@ -23,7 +23,7 @@ protected:
 };
 
 TEST_F(SubroutineInstructions, JSR_pushes_return_and_jumps) {
-    mem.write(0x8000, static_cast<uint8_t>(Opcode::JSR));
+    mem.write(0x8000, static_cast<uint8_t>(Ops::JSR));
     mem.write(0x8001, 0x00);
     mem.write(0x8002, 0x90);
 
@@ -47,7 +47,7 @@ TEST_F(SubroutineInstructions, RTS_pulls_return_and_continues) {
     cpu.pushStack(0x80); 
     cpu.pushStack(0x02); 
 
-    mem.write(0x9000, static_cast<uint8_t>(Opcode::RTS));
+    mem.write(0x9000, static_cast<uint8_t>(Ops::RTS));
 
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getPC(), 0x8003);

@@ -9,14 +9,14 @@ TEST(ArithmeticInstructions, INC_DEC_Memory) {
     Memory mem;
     CPU cpu(mem);
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::INC_ZP));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::INC_ZP));
     mem.write(0x0001, 0x10);
     mem.write(0x0010, 0x05);
 
     cpu.executeInstruction();
     EXPECT_EQ(mem.read(0x0010), 0x06);
 
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::DEC_ZP));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::DEC_ZP));
     mem.write(0x0003, 0x10);
 
     cpu.executeInstruction();
@@ -27,15 +27,15 @@ TEST(ArithmeticInstructions, INX_DEX) {
     Memory mem;
     CPU cpu(mem);
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDX_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
     mem.write(0x0001, 0x10);
     cpu.executeInstruction();
 
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::INX));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::INX));
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('X'), 0x11);
 
-    mem.write(0x0003, static_cast<uint8_t>(Opcode::DEX));
+    mem.write(0x0003, static_cast<uint8_t>(Ops::DEX));
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('X'), 0x10);
 }
@@ -44,15 +44,15 @@ TEST(ArithmeticInstructions, INY_DEY) {
     Memory mem;
     CPU cpu(mem);
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDY_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDY_IMM));
     mem.write(0x0001, 0x20);
     cpu.executeInstruction();
 
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::INY));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::INY));
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('Y'), 0x21);
 
-    mem.write(0x0003, static_cast<uint8_t>(Opcode::DEY));
+    mem.write(0x0003, static_cast<uint8_t>(Ops::DEY));
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('Y'), 0x20);
 }
@@ -61,11 +61,11 @@ TEST(ArithmeticInstructions, ADC_Immediate) {
     Memory mem;
     CPU cpu(mem);
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDA_IMM));
     mem.write(0x0001, 0x10);
     cpu.executeInstruction();
 
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::ADC_IMM));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::ADC_IMM));
     mem.write(0x0003, 0x05);
     cpu.executeInstruction();
 
@@ -76,11 +76,11 @@ TEST(ArithmeticInstructions, ADC_WrapAround) {
     Memory mem;
     CPU cpu(mem);
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDA_IMM));
     mem.write(0x0001, 0xFF);
     cpu.executeInstruction();
 
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::ADC_IMM));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::ADC_IMM));
     mem.write(0x0003, 0x02);
     cpu.executeInstruction();
 
@@ -93,11 +93,11 @@ TEST(ArithmeticInstructions, SBC_Immediate) {
 
     cpu.getFlags().set(Flags::CARRY); 
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDA_IMM));
     mem.write(0x0001, 0x10);
     cpu.executeInstruction();
 
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::SBC_IMM));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::SBC_IMM));
     mem.write(0x0003, 0x03);
     cpu.executeInstruction();
 
@@ -110,11 +110,11 @@ TEST(ArithmeticInstructions, SBC_WrapAround) {
 
     cpu.getFlags().set(Flags::CARRY);  
 
-    mem.write(0x0000, static_cast<uint8_t>(Opcode::LDA_IMM));
+    mem.write(0x0000, static_cast<uint8_t>(Ops::LDA_IMM));
     mem.write(0x0001, 0x00);
     cpu.executeInstruction();
 
-    mem.write(0x0002, static_cast<uint8_t>(Opcode::SBC_IMM));
+    mem.write(0x0002, static_cast<uint8_t>(Ops::SBC_IMM));
     mem.write(0x0003, 0x01);
     cpu.executeInstruction();
 

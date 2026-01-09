@@ -5,7 +5,7 @@
 #include "../../src/cpu/flags.h"
 
 struct CompareTestCase {
-    Opcode opcode;
+    uint8_t opcode;
     CPU::AddressingMode mode;
     uint8_t reg_init;  
     uint8_t mem_value; 
@@ -27,15 +27,15 @@ TEST_P(CompareInstructions, Execute) {
     cpu.reset();
 
     switch (test.opcode) {
-        case Opcode::CMP_IMM:
+        case Ops::CMP_IMM:
             cpu.setA(test.reg_init);
             break;
 
-        case Opcode::CPX_IMM:
+        case Ops::CPX_IMM:
             cpu.setX(test.reg_init);
             break;
 
-        case Opcode::CPY_IMM:
+        case Ops::CPY_IMM:
             cpu.setY(test.reg_init);
             break;
 
@@ -58,17 +58,17 @@ INSTANTIATE_TEST_SUITE_P(
     CompareTests,
     CompareInstructions,
     ::testing::Values(
-        CompareTestCase{Opcode::CMP_IMM, CPU::AddressingMode::Immediate, 0x50, 0x50, true, true, false, "CMP_IMM_eq"},
-        CompareTestCase{Opcode::CMP_IMM, CPU::AddressingMode::Immediate, 0x60, 0x50, true, false, false, "CMP_IMM_gt"},
-        CompareTestCase{Opcode::CMP_IMM, CPU::AddressingMode::Immediate, 0x40, 0x50, false, false, true, "CMP_IMM_lt"},
+        CompareTestCase{Ops::CMP_IMM, CPU::AddressingMode::Immediate, 0x50, 0x50, true, true, false, "CMP_IMM_eq"},
+        CompareTestCase{Ops::CMP_IMM, CPU::AddressingMode::Immediate, 0x60, 0x50, true, false, false, "CMP_IMM_gt"},
+        CompareTestCase{Ops::CMP_IMM, CPU::AddressingMode::Immediate, 0x40, 0x50, false, false, true, "CMP_IMM_lt"},
 
-        CompareTestCase{Opcode::CPX_IMM, CPU::AddressingMode::Immediate, 0x10, 0x10, true, true, false, "CPX_IMM_eq"},
-        CompareTestCase{Opcode::CPX_IMM, CPU::AddressingMode::Immediate, 0x20, 0x10, true, false, false, "CPX_IMM_gt"},
-        CompareTestCase{Opcode::CPX_IMM, CPU::AddressingMode::Immediate, 0x05, 0x10, false, false, true, "CPX_IMM_lt"},
+        CompareTestCase{Ops::CPX_IMM, CPU::AddressingMode::Immediate, 0x10, 0x10, true, true, false, "CPX_IMM_eq"},
+        CompareTestCase{Ops::CPX_IMM, CPU::AddressingMode::Immediate, 0x20, 0x10, true, false, false, "CPX_IMM_gt"},
+        CompareTestCase{Ops::CPX_IMM, CPU::AddressingMode::Immediate, 0x05, 0x10, false, false, true, "CPX_IMM_lt"},
 
-        CompareTestCase{Opcode::CPY_IMM, CPU::AddressingMode::Immediate, 0x30, 0x30, true, true, false, "CPY_IMM_eq"},
-        CompareTestCase{Opcode::CPY_IMM, CPU::AddressingMode::Immediate, 0x40, 0x30, true, false, false, "CPY_IMM_gt"},
-        CompareTestCase{Opcode::CPY_IMM, CPU::AddressingMode::Immediate, 0x20, 0x30, false, false, true, "CPY_IMM_lt"}
+        CompareTestCase{Ops::CPY_IMM, CPU::AddressingMode::Immediate, 0x30, 0x30, true, true, false, "CPY_IMM_eq"},
+        CompareTestCase{Ops::CPY_IMM, CPU::AddressingMode::Immediate, 0x40, 0x30, true, false, false, "CPY_IMM_gt"},
+        CompareTestCase{Ops::CPY_IMM, CPU::AddressingMode::Immediate, 0x20, 0x30, false, false, true, "CPY_IMM_lt"}
     ),
     [](const ::testing::TestParamInfo<CompareTestCase>& info) {
         return std::string(info.param.name);

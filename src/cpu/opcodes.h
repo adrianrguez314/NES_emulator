@@ -1,181 +1,53 @@
-#ifndef opcodes_h
-#define opcodes_h
+#ifndef OPCODES_H
+#define OPCODES_H
 
 #include <cstdint>
+#include <algorithm> 
 #include "cpu.h" 
 
-enum class Opcode : uint8_t {
-    NOP = 0xEA,
+namespace Ops {
+    constexpr uint8_t NOP = 0xEA;
 
-    // =========================
-    // Load Instructions
-    // =========================
+    constexpr uint8_t LDA_IMM = 0xA9, LDA_ZP = 0xA5, LDA_ZPX = 0xB5, LDA_ABS = 0xAD, LDA_ABSX = 0xBD, LDA_ABSY = 0xB9, LDA_INX = 0xA1, LDA_INY = 0xB2;
+    constexpr uint8_t LDX_IMM = 0xA2, LDX_ZP = 0xA6, LDX_ZPY = 0xB6, LDX_ABS = 0xAE, LDX_ABSY = 0xBE;
+    constexpr uint8_t LDY_IMM = 0xA0, LDY_ZP = 0xA4, LDY_ZPX = 0xB4, LDY_ABS = 0xAC, LDY_ABSX = 0xBC;
 
-    // LDA - Load Accumulator
-    LDA_IMM  = 0xA9,
-    LDA_ZP   = 0xA5,
-    LDA_ZPX  = 0xB5,
-    LDA_ABS  = 0xAD,
-    LDA_ABSX = 0xBD,
-    LDA_ABSY = 0xB9,
-    LDA_INX = 0xA1,
-    LDA_INY = 0xB2,
+    constexpr uint8_t STA_ZP = 0x85, STA_ZPX = 0x95, STA_ABS = 0x8D, STA_ABSX = 0x90, STA_ABSY = 0x99, STA_INX = 0x81, STA_INY = 0x92;
+    constexpr uint8_t STX_ZP = 0x86, STX_ZPY = 0x96, STX_ABS = 0x8E;
+    constexpr uint8_t STY_ZP = 0x84, STY_ZPX = 0x94, STY_ABS = 0x8C;
 
-    // LDX - Load X
-    LDX_IMM  = 0xA2,
-    LDX_ZP   = 0xA6,
-    LDX_ZPY  = 0xB6,
-    LDX_ABS  = 0xAE,
-    LDX_ABSY = 0xBE,
+    constexpr uint8_t TAX = 0xAA, TAY = 0xA8, TXA = 0x8A, TYA = 0x98;
+    constexpr uint8_t TSX = 0xBA, TXS = 0x9A;
 
-    // LDY - Load Y
-    LDY_IMM  = 0xA0,
-    LDY_ZP   = 0xA4,
-    LDY_ZPX  = 0xB4,
-    LDY_ABS  = 0xAC,
-    LDY_ABSX = 0xBC,
+    constexpr uint8_t ADC_IMM = 0x69, ADC_ZP = 0x65, ADC_ZPX = 0x75, ADC_ABS = 0x6D, ADC_ABSX = 0x7D, ADC_ABSY = 0x79, ADC_INX = 0x61, ADC_INY = 0x71;
+    constexpr uint8_t SBC_IMM = 0xE9, SBC_ZP = 0xE5, SBC_ZPX = 0xF5, SBC_ABS = 0xED, SBC_ABSX = 0xFD, SBC_ABSY = 0xF9, SBC_INX = 0xE1, SBC_INY = 0xF1;
 
-    // =========================
-    // Store Instructions
-    // =========================
+    constexpr uint8_t INC_ZP = 0xE6, INC_ZPX = 0xF6, INC_ABS = 0xEE, INC_ABSX = 0xFE;
+    constexpr uint8_t DEC_ZP = 0xC6, DEC_ZPX = 0xD6, DEC_ABS = 0xCE, DEC_ABSX = 0xDE;
+    constexpr uint8_t INX = 0xE8, DEX = 0xCA, INY = 0xC8, DEY = 0x88;
 
-    //STA - Store A
-    STA_ZP = 0x85,
-    STA_ZPX = 0x95,
-    STA_ABS = 0x8D,
-    STA_ABSX = 0x90,
-    STA_ABSY = 0x99,
-    STA_INX = 0x81,
-    STA_INY = 0x92,
+    constexpr uint8_t CMP_IMM = 0xC9, CMP_ZP = 0xC5, CMP_ZPX = 0xD5, CMP_ABS = 0xCD, CMP_ABSX = 0xDD, CMP_ABSY = 0xD9, CMP_INDX = 0xC1, CMP_INDY = 0xD1;
+    constexpr uint8_t CPX_IMM = 0xE0, CPX_ZP = 0xE4, CPX_ABS = 0xEC;
+    constexpr uint8_t CPY_IMM = 0xC0, CPY_ZP = 0xC4, CPY_ABS = 0xCC;
 
-    //STX - Store X
-    STX_ZP = 0x86,
-    STX_ZPY = 0x96,
-    STX_ABS = 0x8E,
+    constexpr uint8_t ASL_ACC = 0x0A, ASL_ZP = 0x06, ASL_ZPX = 0x16, ASL_ABS = 0x0E, ASL_ABSX = 0x1E;
+    constexpr uint8_t LSR_ACC = 0x4A, LSR_ZP = 0x46, LSR_ZPX = 0x56, LSR_ABS = 0x4E, LSR_ABSX = 0x5E;
+    constexpr uint8_t ROL_ACC = 0x2A, ROL_ZP = 0x26, ROL_ZPX = 0x36, ROL_ABS = 0x2E, ROL_ABSX = 0x3E;
+    constexpr uint8_t ROR_ACC = 0x6A, ROR_ZP = 0x66, ROR_ZPX = 0x76, ROR_ABS = 0x6E, ROR_ABSX = 0x7E;
+    
+    constexpr uint8_t AND_IMM = 0x29, AND_ZP = 0x25, AND_ZPX = 0x35, AND_ABS = 0x2D, AND_ABSX = 0x3D, AND_ABSY = 0x39, AND_INX = 0x21, AND_INY = 0x31;
+    constexpr uint8_t ORA_IMM = 0x09, ORA_ZP = 0x05, ORA_ZPX = 0x15, ORA_ABS = 0x0D, ORA_ABSX = 0x1D, ORA_ABSY = 0x19, ORA_INX = 0x01, ORA_INY = 0x11;
+    constexpr uint8_t EOR_IMM = 0x49, EOR_ZP = 0x45, EOR_ZPX = 0x55, EOR_ABS = 0x4D, EOR_ABSX = 0x5D, EOR_ABSY = 0x59, EOR_INX = 0x41, EOR_INY = 0x51;
+    constexpr uint8_t BIT_ZP  = 0x24, BIT_ABS = 0x2C;
 
-    //STY - Store Y
-    STY_ZP = 0x84,
-    STY_ZPX = 0x94,
-    STY_ABS = 0x8C,
-
-    // =========================
-    // Transfer Instructions
-    // =========================
-
-    TAX = 0xAA,
-    TAY = 0xA8,
-    TXA = 0x8A,
-    TYA = 0x98,
-
-    // =========================
-    // Arithmetic Instructions
-    // =========================
-
-    // ADC - Add with Carry
-    ADC_IMM  = 0x69,
-    ADC_ZP   = 0x65,
-    ADC_ZPX  = 0x75,
-    ADC_ABS  = 0x6D,
-    ADC_ABSX = 0x7D,
-    ADC_ABSY = 0x79,
-    ADC_INX  = 0x61,
-    ADC_INY  = 0x71,
-
-    // SBC - Subtract with Carry
-    SBC_IMM  = 0xE9,
-    SBC_ZP   = 0xE5,
-    SBC_ZPX  = 0xF5,
-    SBC_ABS  = 0xED,
-    SBC_ABSX = 0xFD,
-    SBC_ABSY = 0xF9,
-    SBC_INX  = 0xE1,
-    SBC_INY  = 0xF1,
-
-    // INC - Increment Memory
-    INC_ZP   = 0xE6,
-    INC_ZPX  = 0xF6,
-    INC_ABS  = 0xEE,
-    INC_ABSX = 0xFE,
-
-    // DEC - Decrement Memory
-    DEC_ZP   = 0xC6,
-    DEC_ZPX  = 0xD6,
-    DEC_ABS  = 0xCE,
-    DEC_ABSX = 0xDE,
-
-    // INX / DEX / INY / DEY - Implied
-    INX = 0xE8,
-    DEX = 0xCA,
-    INY = 0xC8,
-    DEY = 0x88,
-
-    // =========================
-    // Compare Instructions
-    // =========================
-
-    // CMP - Compare Accumulator
-    CMP_IMM   = 0xC9,   
-    CMP_ZP    = 0xC5,   
-    CMP_ZPX   = 0xD5,   
-    CMP_ABS   = 0xCD,   
-    CMP_ABSX  = 0xDD,  
-    CMP_ABSY  = 0xD9,   
-    CMP_INDX  = 0xC1,   
-    CMP_INDY  = 0xD1,   
-
-    // CPX - Compare X
-    CPX_IMM   = 0xE0,   
-    CPX_ZP    = 0xE4,   
-    CPX_ABS   = 0xEC,   
-
-    // CPY – Compare Y
-    CPY_IMM   = 0xC0,  
-    CPY_ZP    = 0xC4,   
-    CPY_ABS   = 0xCC,   
-
-     // =========================
-    // Jump / Subroutine / Interrupts
-    // =========================
-
-    // JMP – Jump
-    JMP_ABS = 0x4C,
-    JMP_IND = 0x6C,
-
-    // JSR – Jump to Subroutine
-    JSR = 0x20,
-
-    // RTS – Return from Subroutine
-    RTS = 0x60,
-
-    // BRK – Force Interrupt
-    BRK = 0x00,
-
-    // RTI – Return from Interrupt
-    RTI = 0x40,
-
-    // =========================
-    // Stack Instructions
-    // =========================
-    PHA = 0x48,
-    PLA = 0x68,
-    PHP = 0x08,
-    PLP = 0x28,
-    TXS = 0xBA,
-    TSX = 0x9A,
-
-    // =========================
-    // Flags Instructions
-    // =========================
-
-    CLC = 0x18,
-    CLD = 0xD8,
-    CLI = 0x58,
-    CLV = 0xB8,
-    SEC = 0x38,
-    SED = 0xF8,
-    SEI = 0x78,
-
-};
+    constexpr uint8_t JMP_ABS = 0x4C, JMP_IND = 0x6C;
+    constexpr uint8_t JSR = 0x20, RTS = 0x60;
+    constexpr uint8_t BRK = 0x00, RTI = 0x40;
+    
+    constexpr uint8_t PHA = 0x48, PLA = 0x68, PHP = 0x08, PLP = 0x28;
+    
+    constexpr uint8_t CLC = 0x18, CLD = 0xD8, CLI = 0x58, CLV = 0xB8, SEC = 0x38, SED = 0xF8, SEI = 0x78;
+}
 
 struct Instruction {
     CPU::AddressingMode mode;
@@ -184,155 +56,193 @@ struct Instruction {
     void (CPU::*handler)(CPU::AddressingMode);
 };
 
-
-static Instruction OPCODE_TABLE[256] = { };
+static Instruction OPCODE_TABLE[256];
 
 inline void initOpcodeTable() {
+    using AM = CPU::AddressingMode;
 
-    for (int i = 0; i < 256; i++) {
-        OPCODE_TABLE[i] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opNOP };
-    }
+    Instruction nopInstr = { AM::Not_addressing, 1, 2, &CPU::opNOP };
+    std::fill(std::begin(OPCODE_TABLE), std::end(OPCODE_TABLE), nopInstr);
 
-    // LDA
-    OPCODE_TABLE[0xA9] = { CPU::AddressingMode::Immediate,  2, 2, &CPU::opLDA };
-    OPCODE_TABLE[0xA5] = { CPU::AddressingMode::ZeroPage,   2, 3, &CPU::opLDA };
-    OPCODE_TABLE[0xB5] = { CPU::AddressingMode::ZeroPage_X, 2, 4, &CPU::opLDA };
-    OPCODE_TABLE[0xAD] = { CPU::AddressingMode::Absolute,   3, 4, &CPU::opLDA };
-    OPCODE_TABLE[0xBD] = { CPU::AddressingMode::Absolute_X, 3, 4, &CPU::opLDA };
-    OPCODE_TABLE[0xB9] = { CPU::AddressingMode::Absolute_Y, 3, 4, &CPU::opLDA };
-    OPCODE_TABLE[0xA1] = { CPU::AddressingMode::Indirect_X, 3, 4, &CPU::opLDA };
-    OPCODE_TABLE[0xB2] = { CPU::AddressingMode::Indirect_Y, 3, 4, &CPU::opLDA };
+    auto reg = [](uint8_t op, AM mode, uint8_t len, uint8_t cyc, void (CPU::*func)(AM)) {
+        OPCODE_TABLE[op] = { mode, len, cyc, func };
+    };
 
-    // LDX
-    OPCODE_TABLE[0xA2] = { CPU::AddressingMode::Immediate,  2, 2, &CPU::opLDX };
-    OPCODE_TABLE[0xA6] = { CPU::AddressingMode::ZeroPage,   2, 3, &CPU::opLDX };
-    OPCODE_TABLE[0xB6] = { CPU::AddressingMode::ZeroPage_Y, 2, 4, &CPU::opLDX };
-    OPCODE_TABLE[0xAE] = { CPU::AddressingMode::Absolute,   3, 4, &CPU::opLDX };
-    OPCODE_TABLE[0xBE] = { CPU::AddressingMode::Absolute_Y, 3, 4, &CPU::opLDX };
+    // --- Load / Store ---
+    reg(Ops::LDA_IMM,  AM::Immediate,   2, 2, &CPU::opLDA);
+    reg(Ops::LDA_ZP,   AM::ZeroPage,    2, 3, &CPU::opLDA);
+    reg(Ops::LDA_ZPX,  AM::ZeroPage_X,  2, 4, &CPU::opLDA);
+    reg(Ops::LDA_ABS,  AM::Absolute,    3, 4, &CPU::opLDA);
+    reg(Ops::LDA_ABSX, AM::Absolute_X,  3, 4, &CPU::opLDA);
+    reg(Ops::LDA_ABSY, AM::Absolute_Y,  3, 4, &CPU::opLDA);
+    reg(Ops::LDA_INX,  AM::Indirect_X,  2, 6, &CPU::opLDA);
+    reg(Ops::LDA_INY,  AM::Indirect_Y,  2, 5, &CPU::opLDA);
 
-    // LDY
-    OPCODE_TABLE[0xA0] = { CPU::AddressingMode::Immediate,  2, 2, &CPU::opLDY };
-    OPCODE_TABLE[0xA4] = { CPU::AddressingMode::ZeroPage,   2, 3, &CPU::opLDY };
-    OPCODE_TABLE[0xB4] = { CPU::AddressingMode::ZeroPage_X, 2, 4, &CPU::opLDY };
-    OPCODE_TABLE[0xAC] = { CPU::AddressingMode::Absolute,   3, 4, &CPU::opLDY };
-    OPCODE_TABLE[0xBC] = { CPU::AddressingMode::Absolute_X, 3, 4, &CPU::opLDY };
+    reg(Ops::LDX_IMM,  AM::Immediate,   2, 2, &CPU::opLDX);
+    reg(Ops::LDX_ZP,   AM::ZeroPage,    2, 3, &CPU::opLDX);
+    reg(Ops::LDX_ZPY,  AM::ZeroPage_Y,  2, 4, &CPU::opLDX);
+    reg(Ops::LDX_ABS,  AM::Absolute,    3, 4, &CPU::opLDX);
+    reg(Ops::LDX_ABSY, AM::Absolute_Y,  3, 4, &CPU::opLDX);
 
-    // STA
-    OPCODE_TABLE[0x85] = { CPU::AddressingMode::ZeroPage,   2, 2, &CPU::opSTA };
-    OPCODE_TABLE[0x95] = { CPU::AddressingMode::ZeroPage_X, 2, 3, &CPU::opSTA };
-    OPCODE_TABLE[0x8D] = { CPU::AddressingMode::Absolute,   2, 4, &CPU::opSTA };
-    OPCODE_TABLE[0x90] = { CPU::AddressingMode::Absolute_X, 3, 4, &CPU::opSTA };
-    OPCODE_TABLE[0x99] = { CPU::AddressingMode::Absolute_Y, 3, 4, &CPU::opSTA };
-    OPCODE_TABLE[0x81] = { CPU::AddressingMode::Indirect_X, 3, 4, &CPU::opSTA };
-    OPCODE_TABLE[0x92] = { CPU::AddressingMode::Indirect_Y, 3, 4, &CPU::opSTA };
+    reg(Ops::LDY_IMM,  AM::Immediate,   2, 2, &CPU::opLDY);
+    reg(Ops::LDY_ZP,   AM::ZeroPage,    2, 3, &CPU::opLDY);
+    reg(Ops::LDY_ZPX,  AM::ZeroPage_X,  2, 4, &CPU::opLDY);
+    reg(Ops::LDY_ABS,  AM::Absolute,    3, 4, &CPU::opLDY);
+    reg(Ops::LDY_ABSX, AM::Absolute_X,  3, 4, &CPU::opLDY);
 
-    // STX
-    OPCODE_TABLE[0x86] = { CPU::AddressingMode::ZeroPage,   2, 2, &CPU::opSTX };
-    OPCODE_TABLE[0x96] = { CPU::AddressingMode::ZeroPage_Y, 2, 3, &CPU::opSTX };
-    OPCODE_TABLE[0x8E] = { CPU::AddressingMode::Absolute,   2, 4, &CPU::opSTX };
+    reg(Ops::STA_ZP,   AM::ZeroPage,    2, 2, &CPU::opSTA);
+    reg(Ops::STA_ZPX,  AM::ZeroPage_X,  2, 3, &CPU::opSTA);
+    reg(Ops::STA_ABS,  AM::Absolute,    3, 4, &CPU::opSTA);
+    reg(Ops::STA_ABSX, AM::Absolute_X,  3, 5, &CPU::opSTA); 
+    reg(Ops::STA_ABSY, AM::Absolute_Y,  3, 5, &CPU::opSTA);
+    reg(Ops::STA_INX,  AM::Indirect_X,  2, 6, &CPU::opSTA);
+    reg(Ops::STA_INY,  AM::Indirect_Y,  2, 6, &CPU::opSTA);
 
-    // STY
-    OPCODE_TABLE[0x84] = { CPU::AddressingMode::ZeroPage,   2, 2, &CPU::opSTY };
-    OPCODE_TABLE[0x94] = { CPU::AddressingMode::ZeroPage_X, 2, 3, &CPU::opSTY };
-    OPCODE_TABLE[0x8C] = { CPU::AddressingMode::Absolute,   2, 4, &CPU::opSTY };
+    reg(Ops::STX_ZP,   AM::ZeroPage,    2, 2, &CPU::opSTX);
+    reg(Ops::STX_ZPY,  AM::ZeroPage_Y,  2, 3, &CPU::opSTX);
+    reg(Ops::STX_ABS,  AM::Absolute,    3, 4, &CPU::opSTX);
 
-    // TRANSFER instructions
-    OPCODE_TABLE[0xAA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTAX };
-    OPCODE_TABLE[0xA8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTAY };
-    OPCODE_TABLE[0x8A] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTXA };
-    OPCODE_TABLE[0x98] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTYA };
+    reg(Ops::STY_ZP,   AM::ZeroPage,    2, 2, &CPU::opSTY);
+    reg(Ops::STY_ZPX,  AM::ZeroPage_X,  2, 3, &CPU::opSTY);
+    reg(Ops::STY_ABS,  AM::Absolute,    3, 4, &CPU::opSTY);
 
-    // ADC 
-    OPCODE_TABLE[0x69] = { CPU::AddressingMode::Immediate,  2, 2, &CPU::opADC };
-    OPCODE_TABLE[0x65] = { CPU::AddressingMode::ZeroPage,   2, 3, &CPU::opADC };
-    OPCODE_TABLE[0x75] = { CPU::AddressingMode::ZeroPage_X, 2, 4, &CPU::opADC };
-    OPCODE_TABLE[0x6D] = { CPU::AddressingMode::Absolute,   3, 4, &CPU::opADC };
-    OPCODE_TABLE[0x7D] = { CPU::AddressingMode::Absolute_X, 3, 4, &CPU::opADC };
-    OPCODE_TABLE[0x79] = { CPU::AddressingMode::Absolute_Y, 3, 4, &CPU::opADC };
-    OPCODE_TABLE[0x61] = { CPU::AddressingMode::Indirect_X, 2, 6, &CPU::opADC };
-    OPCODE_TABLE[0x71] = { CPU::AddressingMode::Indirect_Y, 2, 5, &CPU::opADC };
+    // --- Register / Transfer ---
+    reg(Ops::TAX, AM::Not_addressing, 1, 2, &CPU::opTAX);
+    reg(Ops::TAY, AM::Not_addressing, 1, 2, &CPU::opTAY);
+    reg(Ops::TXA, AM::Not_addressing, 1, 2, &CPU::opTXA);
+    reg(Ops::TYA, AM::Not_addressing, 1, 2, &CPU::opTYA);
+    reg(Ops::TSX, AM::Not_addressing, 1, 2, &CPU::opTSX);
+    reg(Ops::TXS, AM::Not_addressing, 1, 2, &CPU::opTXS);
 
-    // SBC 
-    OPCODE_TABLE[0xE9] = { CPU::AddressingMode::Immediate,  2, 2, &CPU::opSBC };
-    OPCODE_TABLE[0xE5] = { CPU::AddressingMode::ZeroPage,   2, 3, &CPU::opSBC };
-    OPCODE_TABLE[0xF5] = { CPU::AddressingMode::ZeroPage_X, 2, 4, &CPU::opSBC };
-    OPCODE_TABLE[0xED] = { CPU::AddressingMode::Absolute,   3, 4, &CPU::opSBC };
-    OPCODE_TABLE[0xFD] = { CPU::AddressingMode::Absolute_X, 3, 4, &CPU::opSBC };
-    OPCODE_TABLE[0xF9] = { CPU::AddressingMode::Absolute_Y, 3, 4, &CPU::opSBC };
-    OPCODE_TABLE[0xE1] = { CPU::AddressingMode::Indirect_X, 2, 6, &CPU::opSBC };
-    OPCODE_TABLE[0xF1] = { CPU::AddressingMode::Indirect_Y, 2, 5, &CPU::opSBC };
+    // --- Arithmetic ---
+    reg(Ops::ADC_IMM,  AM::Immediate,   2, 2, &CPU::opADC);
+    reg(Ops::ADC_ZP,   AM::ZeroPage,    2, 3, &CPU::opADC);
+    reg(Ops::ADC_ZPX,  AM::ZeroPage_X,  2, 4, &CPU::opADC);
+    reg(Ops::ADC_ABS,  AM::Absolute,    3, 4, &CPU::opADC);
+    reg(Ops::ADC_ABSX, AM::Absolute_X,  3, 4, &CPU::opADC);
+    reg(Ops::ADC_ABSY, AM::Absolute_Y,  3, 4, &CPU::opADC);
+    reg(Ops::ADC_INX,  AM::Indirect_X,  2, 6, &CPU::opADC);
+    reg(Ops::ADC_INY,  AM::Indirect_Y,  2, 5, &CPU::opADC);
 
-    // INC 
-    OPCODE_TABLE[0xE6] = { CPU::AddressingMode::ZeroPage,   2, 5, &CPU::opINC };
-    OPCODE_TABLE[0xF6] = { CPU::AddressingMode::ZeroPage_X, 2, 6, &CPU::opINC };
-    OPCODE_TABLE[0xEE] = { CPU::AddressingMode::Absolute,   3, 6, &CPU::opINC };
-    OPCODE_TABLE[0xFE] = { CPU::AddressingMode::Absolute_X, 3, 7, &CPU::opINC };
+    reg(Ops::SBC_IMM,  AM::Immediate,   2, 2, &CPU::opSBC);
+    reg(Ops::SBC_ZP,   AM::ZeroPage,    2, 3, &CPU::opSBC);
+    reg(Ops::SBC_ZPX,  AM::ZeroPage_X,  2, 4, &CPU::opSBC);
+    reg(Ops::SBC_ABS,  AM::Absolute,    3, 4, &CPU::opSBC);
+    reg(Ops::SBC_ABSX, AM::Absolute_X,  3, 4, &CPU::opSBC);
+    reg(Ops::SBC_ABSY, AM::Absolute_Y,  3, 4, &CPU::opSBC);
+    reg(Ops::SBC_INX,  AM::Indirect_X,  2, 6, &CPU::opSBC);
+    reg(Ops::SBC_INY,  AM::Indirect_Y,  2, 5, &CPU::opSBC);
 
-    // DEC 
-    OPCODE_TABLE[0xC6] = { CPU::AddressingMode::ZeroPage,   2, 5, &CPU::opDEC };
-    OPCODE_TABLE[0xD6] = { CPU::AddressingMode::ZeroPage_X, 2, 6, &CPU::opDEC };
-    OPCODE_TABLE[0xCE] = { CPU::AddressingMode::Absolute,   3, 6, &CPU::opDEC };
-    OPCODE_TABLE[0xDE] = {CPU::AddressingMode::Absolute_X, 3, 7, &CPU::opDEC };
+    // --- Inc / Dec ---
+    reg(Ops::INC_ZP,   AM::ZeroPage,    2, 5, &CPU::opINC);
+    reg(Ops::INC_ZPX,  AM::ZeroPage_X,  2, 6, &CPU::opINC);
+    reg(Ops::INC_ABS,  AM::Absolute,    3, 6, &CPU::opINC);
+    reg(Ops::INC_ABSX, AM::Absolute_X,  3, 7, &CPU::opINC);
 
-    // Register increments (Implied)
-    OPCODE_TABLE[0xE8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opINX };
-    OPCODE_TABLE[0xCA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opDEX };
-    OPCODE_TABLE[0xC8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opINY };
-    OPCODE_TABLE[0x88] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opDEY };
+    reg(Ops::DEC_ZP,   AM::ZeroPage,    2, 5, &CPU::opDEC);
+    reg(Ops::DEC_ZPX,  AM::ZeroPage_X,  2, 6, &CPU::opDEC);
+    reg(Ops::DEC_ABS,  AM::Absolute,    3, 6, &CPU::opDEC);
+    reg(Ops::DEC_ABSX, AM::Absolute_X,  3, 7, &CPU::opDEC);
+    
+    reg(Ops::INX, AM::Not_addressing, 1, 2, &CPU::opINX);
+    reg(Ops::DEX, AM::Not_addressing, 1, 2, &CPU::opDEX);
+    reg(Ops::INY, AM::Not_addressing, 1, 2, &CPU::opINY);
+    reg(Ops::DEY, AM::Not_addressing, 1, 2, &CPU::opDEY);
 
-    // Flags instructions
-    OPCODE_TABLE[0x18] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLC };
-    OPCODE_TABLE[0xD8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLD };
-    OPCODE_TABLE[0x58] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLI };
-    OPCODE_TABLE[0xB8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opCLV };
-    OPCODE_TABLE[0x38] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSEC };
-    OPCODE_TABLE[0xF8] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSED };
-    OPCODE_TABLE[0x78] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opSEI };
+    // --- Compare ---
+    reg(Ops::CMP_IMM,  AM::Immediate,   2, 2, &CPU::opCMP);
+    reg(Ops::CMP_ZP,   AM::ZeroPage,    2, 3, &CPU::opCMP);
+    reg(Ops::CMP_ZPX,  AM::ZeroPage_X,  2, 4, &CPU::opCMP);
+    reg(Ops::CMP_ABS,  AM::Absolute,    3, 4, &CPU::opCMP);
+    reg(Ops::CMP_ABSX, AM::Absolute_X,  3, 4, &CPU::opCMP);
+    reg(Ops::CMP_ABSY, AM::Absolute_Y,  3, 4, &CPU::opCMP);
+    reg(Ops::CMP_INDX, AM::Indirect_X,  2, 6, &CPU::opCMP);
+    reg(Ops::CMP_INDY, AM::Indirect_Y,  2, 5, &CPU::opCMP);
 
-    // CMP – Compare Accumulator
-    OPCODE_TABLE[0xC9] = { CPU::AddressingMode::Immediate,   2, 2, &CPU::opCMP };
-    OPCODE_TABLE[0xC5] = { CPU::AddressingMode::ZeroPage,    2, 3, &CPU::opCMP };
-    OPCODE_TABLE[0xD5] = { CPU::AddressingMode::ZeroPage_X,  2, 4, &CPU::opCMP };
-    OPCODE_TABLE[0xCD] = { CPU::AddressingMode::Absolute,    3, 4, &CPU::opCMP };
-    OPCODE_TABLE[0xDD] = { CPU::AddressingMode::Absolute_X,  3, 4, &CPU::opCMP };
-    OPCODE_TABLE[0xD9] = { CPU::AddressingMode::Absolute_Y,  3, 4, &CPU::opCMP };
-    OPCODE_TABLE[0xC1] = { CPU::AddressingMode::Indirect_X,  2, 6, &CPU::opCMP };
-    OPCODE_TABLE[0xD1] = { CPU::AddressingMode::Indirect_Y,  2, 5, &CPU::opCMP };
+    reg(Ops::CPX_IMM, AM::Immediate, 2, 2, &CPU::opCPX);
+    reg(Ops::CPX_ZP,  AM::ZeroPage,  2, 3, &CPU::opCPX);
+    reg(Ops::CPX_ABS, AM::Absolute,  3, 4, &CPU::opCPX);
+    
+    reg(Ops::CPY_IMM, AM::Immediate, 2, 2, &CPU::opCPY);
+    reg(Ops::CPY_ZP,  AM::ZeroPage,  2, 3, &CPU::opCPY);
+    reg(Ops::CPY_ABS, AM::Absolute,  3, 4, &CPU::opCPY);
 
-    // CPX – Compare X
-    OPCODE_TABLE[0xE0] = { CPU::AddressingMode::Immediate,   2, 2, &CPU::opCPX };
-    OPCODE_TABLE[0xE4] = { CPU::AddressingMode::ZeroPage,    2, 3, &CPU::opCPX };
-    OPCODE_TABLE[0xEC] = { CPU::AddressingMode::Absolute,    3, 4, &CPU::opCPX };
+    // --- Shifts & Logical ---
+    reg(Ops::ASL_ACC,  AM::Accumulator, 1, 2, &CPU::opASL);
+    reg(Ops::ASL_ZP,   AM::ZeroPage,    2, 5, &CPU::opASL);
+    reg(Ops::ASL_ZPX,  AM::ZeroPage_X,  2, 6, &CPU::opASL);
+    reg(Ops::ASL_ABS,  AM::Absolute,    3, 6, &CPU::opASL);
+    reg(Ops::ASL_ABSX, AM::Absolute_X,  3, 7, &CPU::opASL);
 
-    // CPY – Compare Y
-    OPCODE_TABLE[0xC0] = { CPU::AddressingMode::Immediate,   2, 2, &CPU::opCPY };
-    OPCODE_TABLE[0xC4] = { CPU::AddressingMode::ZeroPage,    2, 3, &CPU::opCPY };
-    OPCODE_TABLE[0xCC] = { CPU::AddressingMode::Absolute,    3, 4, &CPU::opCPY };
+    reg(Ops::LSR_ACC,  AM::Accumulator, 1, 2, &CPU::opLSR);
+    reg(Ops::LSR_ZP,   AM::ZeroPage,    2, 5, &CPU::opLSR);
+    reg(Ops::LSR_ZPX,  AM::ZeroPage_X,  2, 6, &CPU::opLSR);
+    reg(Ops::LSR_ABS,  AM::Absolute,    3, 6, &CPU::opLSR);
+    reg(Ops::LSR_ABSX, AM::Absolute_X,  3, 7, &CPU::opLSR);
 
-    // JMP – Jump
-    OPCODE_TABLE[0x4C] = { CPU::AddressingMode::Absolute,   3, 3, &CPU::opJMP };
-    OPCODE_TABLE[0x6C] = { CPU::AddressingMode::Indirect,   3, 5, &CPU::opJMP };
+    reg(Ops::ROL_ACC,  AM::Accumulator, 1, 2, &CPU::opROL);
+    reg(Ops::ROL_ZP,   AM::ZeroPage,    2, 5, &CPU::opROL);
+    reg(Ops::ROL_ZPX,  AM::ZeroPage_X,  2, 6, &CPU::opROL);
+    reg(Ops::ROL_ABS,  AM::Absolute,    3, 6, &CPU::opROL);
+    reg(Ops::ROL_ABSX, AM::Absolute_X,  3, 7, &CPU::opROL);
 
-    // JSR – Jump to Subroutine
-    OPCODE_TABLE[0x20] = { CPU::AddressingMode::Absolute,   3, 6, &CPU::opJSR };
+    reg(Ops::ROR_ACC,  AM::Accumulator, 1, 2, &CPU::opROR);
+    reg(Ops::ROR_ZP,   AM::ZeroPage,    2, 5, &CPU::opROR);
+    reg(Ops::ROR_ZPX,  AM::ZeroPage_X,  2, 6, &CPU::opROR);
+    reg(Ops::ROR_ABS,  AM::Absolute,    3, 6, &CPU::opROR);
+    reg(Ops::ROR_ABSX, AM::Absolute_X,  3, 7, &CPU::opROR);
 
-    // RTS – Return from Subroutine
-    OPCODE_TABLE[0x60] = { CPU::AddressingMode::Not_addressing, 1, 6, &CPU::opRTS };
+    reg(Ops::AND_IMM,  AM::Immediate,   2, 2, &CPU::opAND);
+    reg(Ops::AND_ZP,   AM::ZeroPage,    2, 3, &CPU::opAND);
+    reg(Ops::AND_ZPX,  AM::ZeroPage_X,  2, 4, &CPU::opAND);
+    reg(Ops::AND_ABS,  AM::Absolute,    3, 4, &CPU::opAND);
+    reg(Ops::AND_ABSX, AM::Absolute_X,  3, 4, &CPU::opAND);
+    reg(Ops::AND_ABSY, AM::Absolute_Y,  3, 4, &CPU::opAND);
+    reg(Ops::AND_INX,  AM::Indirect_X,  2, 6, &CPU::opAND);
+    reg(Ops::AND_INY,  AM::Indirect_Y,  2, 5, &CPU::opAND);
 
-    // BRK – Force Interrupt
-    OPCODE_TABLE[0x00] = { CPU::AddressingMode::Not_addressing, 1, 7, &CPU::opBRK };
+    reg(Ops::ORA_IMM,  AM::Immediate,   2, 2, &CPU::opORA);
+    reg(Ops::ORA_ZP,   AM::ZeroPage,    2, 3, &CPU::opORA);
+    reg(Ops::ORA_ZPX,  AM::ZeroPage_X,  2, 4, &CPU::opORA);
+    reg(Ops::ORA_ABS,  AM::Absolute,    3, 4, &CPU::opORA);
+    reg(Ops::ORA_ABSX, AM::Absolute_X,  3, 4, &CPU::opORA);
+    reg(Ops::ORA_ABSY, AM::Absolute_Y,  3, 4, &CPU::opORA);
+    reg(Ops::ORA_INX,  AM::Indirect_X,  2, 6, &CPU::opORA);
+    reg(Ops::ORA_INY,  AM::Indirect_Y,  2, 5, &CPU::opORA);
 
-    // RTI – Return from Interrupt
-    OPCODE_TABLE[0x40] = { CPU::AddressingMode::Not_addressing, 1, 6, &CPU::opRTI };
+    reg(Ops::EOR_IMM,  AM::Immediate,   2, 2, &CPU::opEOR);
+    reg(Ops::EOR_ZP,   AM::ZeroPage,    2, 3, &CPU::opEOR);
+    reg(Ops::EOR_ZPX,  AM::ZeroPage_X,  2, 4, &CPU::opEOR);
+    reg(Ops::EOR_ABS,  AM::Absolute,    3, 4, &CPU::opEOR);
+    reg(Ops::EOR_ABSX, AM::Absolute_X,  3, 4, &CPU::opEOR);
+    reg(Ops::EOR_ABSY, AM::Absolute_Y,  3, 4, &CPU::opEOR);
+    reg(Ops::EOR_INX,  AM::Indirect_X,  2, 6, &CPU::opEOR);
+    reg(Ops::EOR_INY,  AM::Indirect_Y,  2, 5, &CPU::opEOR);
 
-    // Stack instructions - implied 
-    OPCODE_TABLE[0x48] = { CPU::AddressingMode::Not_addressing, 1, 3, &CPU::opPHA };
-    OPCODE_TABLE[0x68] = { CPU::AddressingMode::Not_addressing, 1, 4, &CPU::opPLA };
-    OPCODE_TABLE[0x08] = { CPU::AddressingMode::Not_addressing, 1, 3, &CPU::opPHP };
-    OPCODE_TABLE[0x28] = { CPU::AddressingMode::Not_addressing, 1, 4, &CPU::opPLP };
-    OPCODE_TABLE[0xBA] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTSX };
-    OPCODE_TABLE[0x9A] = { CPU::AddressingMode::Not_addressing, 1, 2, &CPU::opTXS };
+    reg(Ops::BIT_ZP,   AM::ZeroPage,    2, 3, &CPU::opBIT);
+    reg(Ops::BIT_ABS,  AM::Absolute,    3, 4, &CPU::opBIT);
 
+    // --- Control Flow & Stack ---
+    reg(Ops::JMP_ABS, AM::Absolute, 3, 3, &CPU::opJMP);
+    reg(Ops::JMP_IND, AM::Indirect, 3, 5, &CPU::opJMP);
+    reg(Ops::JSR,     AM::Absolute, 3, 6, &CPU::opJSR);
+    reg(Ops::RTS,     AM::Not_addressing, 1, 6, &CPU::opRTS);
+    reg(Ops::BRK,     AM::Not_addressing, 1, 7, &CPU::opBRK);
+    reg(Ops::RTI,     AM::Not_addressing, 1, 6, &CPU::opRTI);
+
+    reg(Ops::PHA, AM::Not_addressing, 1, 3, &CPU::opPHA);
+    reg(Ops::PLA, AM::Not_addressing, 1, 4, &CPU::opPLA);
+    reg(Ops::PHP, AM::Not_addressing, 1, 3, &CPU::opPHP);
+    reg(Ops::PLP, AM::Not_addressing, 1, 4, &CPU::opPLP);
+
+    // --- Flags ---
+    reg(Ops::CLC, AM::Not_addressing, 1, 2, &CPU::opCLC);
+    reg(Ops::CLD, AM::Not_addressing, 1, 2, &CPU::opCLD);
+    reg(Ops::CLI, AM::Not_addressing, 1, 2, &CPU::opCLI);
+    reg(Ops::CLV, AM::Not_addressing, 1, 2, &CPU::opCLV);
+    reg(Ops::SEC, AM::Not_addressing, 1, 2, &CPU::opSEC);
+    reg(Ops::SED, AM::Not_addressing, 1, 2, &CPU::opSED);
+    reg(Ops::SEI, AM::Not_addressing, 1, 2, &CPU::opSEI);
 }
 
-#endif // opcodes_h
+#endif // OPCODES_H

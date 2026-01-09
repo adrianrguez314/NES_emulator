@@ -6,7 +6,7 @@
 
 // Struct para parametrizar cada caso
 struct FlagTestCase {
-    Opcode opcode;
+    uint8_t opcode;
     Flags::Flag flag;
     bool expected;
     const char* name;
@@ -23,7 +23,7 @@ TEST_P(FlagsInstructions, Execute) {
 
     cpu.reset();
 
-    if (test.opcode == Opcode::CLV) {
+    if (test.opcode == Ops::CLV) {
         cpu.getFlags().updateOverflow(0x50, 0x50, 0xA0);
     }
 
@@ -37,13 +37,13 @@ INSTANTIATE_TEST_SUITE_P(
     FlagsTests,
     FlagsInstructions,
     ::testing::Values(
-        FlagTestCase{Opcode::SEC, Flags::CARRY, true, "SEC"},
-        FlagTestCase{Opcode::SED, Flags::DECIMAL_MODE, true, "SED"},
-        FlagTestCase{Opcode::SEI, Flags::INTERRUPT_DISABLE, true, "SEI"},
-        FlagTestCase{Opcode::CLC, Flags::CARRY, false, "CLC"},
-        FlagTestCase{Opcode::CLD, Flags::DECIMAL_MODE, false, "CLD"},
-        FlagTestCase{Opcode::CLI, Flags::INTERRUPT_DISABLE, false, "CLI"},
-        FlagTestCase{Opcode::CLV, Flags::OVERFLOW, false, "CLV"}
+        FlagTestCase{Ops::SEC, Flags::CARRY, true, "SEC"},
+        FlagTestCase{Ops::SED, Flags::DECIMAL_MODE, true, "SED"},
+        FlagTestCase{Ops::SEI, Flags::INTERRUPT_DISABLE, true, "SEI"},
+        FlagTestCase{Ops::CLC, Flags::CARRY, false, "CLC"},
+        FlagTestCase{Ops::CLD, Flags::DECIMAL_MODE, false, "CLD"},
+        FlagTestCase{Ops::CLI, Flags::INTERRUPT_DISABLE, false, "CLI"},
+        FlagTestCase{Ops::CLV, Flags::OVERFLOW, false, "CLV"}
     ),
     [](const ::testing::TestParamInfo<FlagTestCase>& info) {
         return std::string(info.param.name);

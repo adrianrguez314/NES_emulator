@@ -28,6 +28,7 @@ class CPU {
             Indirect,
             Indirect_X,
             Indirect_Y,
+            Accumulator,
             Not_addressing,
         };
         uint16_t getAddress(AddressingMode mode);
@@ -104,7 +105,20 @@ class CPU {
         void opPLP (AddressingMode mode);
         void opTXS(AddressingMode mode);
         void opTSX(AddressingMode mode);
-            
+
+        // Bitwise
+        void opAND(AddressingMode mode);
+        void opORA(AddressingMode mode);
+        void opEOR(AddressingMode mode);
+        void opBIT(AddressingMode mode);
+
+        // Shift
+        void opASL(AddressingMode mode);
+        void opLSR(AddressingMode mode);
+        void opROL(AddressingMode mode);
+        void opROR(AddressingMode mode);
+
+        // NOT
         void opNOP(AddressingMode mode);
 
         protected:
