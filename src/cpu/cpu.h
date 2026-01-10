@@ -17,6 +17,7 @@ class CPU {
         void reset();
         int executeInstruction();
         void run(int cycles_to_execute);
+        void branchRelative(bool condition);
 
         enum class AddressingMode {
             Immediate,
@@ -57,6 +58,7 @@ class CPU {
         const Flags& getFlags() const { return registers.P; }
 
         uint64_t getCycles() const { return total_cycles; }
+        void addCycles(int cycles) { extra_cycles += cycles; }
         bool isInstructionComplete() const { return cycles_remaining == 0; }
         void trace();
         void setDebugMode(bool state) { debug_enabled = state; }
@@ -158,6 +160,8 @@ class CPU {
             } registers;
             long long total_cycles = 0;
             int cycles_remaining = 0;
+            int extra_cycles = 0; 
+            bool page_crossed = false;
             bool debug_enabled = false;
 
 };

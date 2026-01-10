@@ -33,12 +33,12 @@ TEST_F(SubroutineInstructions, JSR_pushes_return_and_jumps) {
     EXPECT_EQ(cpu.getPC(), 0x9000);
 
     uint16_t returnAddr = 0x8002;
+    uint8_t pushedHigh = mem.read(0x0100 + initialSP);
+    uint8_t pushedLow  = mem.read(0x0100 + initialSP - 1);
 
-    uint8_t low  = mem.read(0x0100 + initialSP);
-    uint8_t high = mem.read(0x0100 + initialSP - 1);
-
-    EXPECT_EQ(low,  returnAddr & 0xFF);
-    EXPECT_EQ(high, (returnAddr >> 8) & 0xFF);
+    EXPECT_EQ(pushedHigh, (returnAddr >> 8) & 0xFF); 
+    EXPECT_EQ(pushedLow,  returnAddr & 0xFF);        
+    EXPECT_EQ(cpu.getRegister('S'), initialSP - 2);
 }
 
 TEST_F(SubroutineInstructions, RTS_pulls_return_and_continues) {
@@ -51,6 +51,7 @@ TEST_F(SubroutineInstructions, RTS_pulls_return_and_continues) {
 
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getPC(), 0x8003);
+    EXPECT_EQ(cpu.getRegister('S'), 0xFD);
 }
 
 TEST_F(SubroutineInstructions, BRK_pushes_pc_and_status_and_jumps) {
@@ -59,7 +60,7 @@ TEST_F(SubroutineInstructions, BRK_pushes_pc_and_status_and_jumps) {
 
     mem.write(0xFFFE, 0x34); 
     mem.write(0xFFFF, 0x12); 
-
+    
     cpu.opBRK(CPU::AddressingMode::Immediate);
 
     uint8_t status = stackPeek(0);
@@ -72,6 +73,8 @@ TEST_F(SubroutineInstructions, BRK_pushes_pc_and_status_and_jumps) {
     EXPECT_EQ(pcl, returnAddr & 0xFF);
     EXPECT_EQ(pch, (returnAddr >> 8) & 0xFF);
     EXPECT_EQ(status, expectedStatus);
+    
+    // Salto al vector IRQ
     EXPECT_EQ(cpu.getPC(), 0x1234);
     EXPECT_TRUE(cpu.getFlags().isSet(Flags::INTERRUPT_DISABLE));
 }
@@ -80,12 +83,17 @@ TEST_F(SubroutineInstructions, RTI_restores_pc_and_status) {
     uint16_t savedPC = 0x3456;
     uint8_t savedStatus = 0b10101010;
 
-    cpu.setSP(0xFF);
     cpu.pushStack((savedPC >> 8) & 0xFF); 
     cpu.pushStack(savedPC & 0xFF);       
     cpu.pushStack(savedStatus);         
 
     cpu.opRTI(CPU::AddressingMode::Immediate);
+    
     EXPECT_EQ(cpu.getPC(), savedPC);
-    EXPECT_EQ(cpu.getFlags().raw(), savedStatus);
+    
+    uint8_t expectedStatusAfterRTI = savedStatus & ~(1 << Flags::BREAK_COMMAND);
+    expectedStatusAfterRTI |= (1 << Flags::UNUSED);
+    
+    EXPECT_EQ(cpu.getFlags().raw(), expectedStatusAfterRTI);
+    EXPECT_EQ(cpu.getRegister('S'), 0xFD);
 }

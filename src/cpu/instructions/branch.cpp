@@ -3,41 +3,33 @@
 
 
 void CPU::opBPL(AddressingMode mode) {
-    uint16_t addr = getAddress(mode);
-    if (!registers.P.isSet(Flags::NEGATIVE)) registers.PC = addr;
+    branchRelative(!registers.P.isSet(Flags::NEGATIVE));
 }
 
 void CPU::opBMI(AddressingMode mode) {
-    uint16_t addr = getAddress(mode);
-    if (registers.P.isSet(Flags::NEGATIVE)) registers.PC = addr;
+    branchRelative(registers.P.isSet(Flags::NEGATIVE));
 }
 
 void CPU::opBVC(AddressingMode mode) {
-    uint16_t addr = getAddress(mode);
-    if (!registers.P.isSet(Flags::OVERFLOW)) registers.PC = addr;
+    branchRelative(!registers.P.isSet(Flags::OVERFLOW));
 }
 
 void CPU::opBVS(AddressingMode mode) {
-    uint16_t addr = getAddress(mode);
-    if (registers.P.isSet(Flags::OVERFLOW)) registers.PC = addr;
+    branchRelative(registers.P.isSet(Flags::OVERFLOW));
 }
 
 void CPU::opBCC(AddressingMode mode) {
-    uint16_t addr = getAddress(mode);
-    if (!registers.P.isSet(Flags::CARRY)) registers.PC = addr;
+    branchRelative(!registers.P.isSet(Flags::CARRY));
 }
 
 void CPU::opBCS(AddressingMode mode) {
-    uint16_t addr = getAddress(mode);
-    if (registers.P.isSet(Flags::CARRY)) registers.PC = addr;
+    branchRelative(registers.P.isSet(Flags::CARRY));
 }
 
 void CPU::opBNE(AddressingMode mode) {
-    uint16_t addr = getAddress(mode);
-    if (!registers.P.isSet(Flags::ZERO)) registers.PC = addr;
+    branchRelative(!registers.P.isSet(Flags::ZERO));
 }
 
 void CPU::opBEQ(AddressingMode mode) {
-    uint16_t addr = getAddress(mode);
-    if (registers.P.isSet(Flags::ZERO)) registers.PC = addr;
+    branchRelative(registers.P.isSet(Flags::ZERO));
 }

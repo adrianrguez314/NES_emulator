@@ -20,7 +20,7 @@ void CPU::reset() {
     registers.X = 0;
     registers.Y = 0;
     registers.PC = 0;
-    registers.SP = 0xFF;
+    registers.SP = 0xFD;
     registers.status = 0x24;
 }
 
@@ -35,6 +35,9 @@ uint8_t CPU::pullStack() {
 }
 
 int CPU::executeInstruction() {
+    extra_cycles = 0;  
+    page_crossed = false;
+
     uint8_t opcode = mem.read(registers.PC);
     registers.PC++;
     uint16_t pc_status = registers.PC;
@@ -44,7 +47,7 @@ int CPU::executeInstruction() {
 
     if (registers.PC == pc_status)  registers.PC += instr.len - 1; 
 
-    return instr.cycles;
+    return instr.cycles + extra_cycles;
 }
 
 void CPU::run(int cycles_to_run) {
@@ -60,6 +63,23 @@ void CPU::run(int cycles_to_run) {
         total_cycles++;
 
     }
+}
+
+void CPU::branchRelative(bool condition) {
+
+    int8_t offset = static_cast<int8_t>(mem.read(registers.PC)); 
+    
+    if (condition) {
+        addCycles(1); 
+        uint16_t oldPC = registers.PC + 1; 
+        uint16_t newPC = oldPC + offset;
+        
+        if ((oldPC & 0xFF00) != (newPC & 0xFF00)) {
+            addCycles(1);
+        }
+
+        registers.PC = newPC;
+    } 
 }
 
 uint8_t CPU::getRegister(char registerName) const {
@@ -87,8 +107,8 @@ void CPU::trace() {
               << "A:"  << std::setw(2) << static_cast<int>(registers.A) << " "
               << "X:"  << std::setw(2) << static_cast<int>(registers.X) << " "
               << "Y:"  << std::setw(2) << static_cast<int>(registers.Y) << " "
-              << "P:"  << std::setw(2) << static_cast<int>(registers.SP) << " "
-              << "SP:" << std::setw(2) << static_cast<int>(registers.status) << " "
+              << "SP:"  << std::setw(2) << static_cast<int>(registers.SP) << " "
+              << "P:" << std::setw(2) << static_cast<int>(registers.status) << " "
               << std::dec << "CYC:" << total_cycles 
               << std::endl;
 }

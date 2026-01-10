@@ -81,7 +81,7 @@ TEST(CPUTiming, MultiplicationLoop) {
         Ops::CLC,            
         Ops::ADC_IMM, 0x03,  
         Ops::DEX,           
-        Ops::BNE, 0xF9       
+        Ops::BNE, 0xFA       
     });
 
     cpu.run(39);
@@ -108,7 +108,7 @@ TEST(CPUTiming, MemoryCopyStress) {
         Ops::LDA_ABSX, 0x00, 0x03, 
         Ops::STA_ABSX, 0x00, 0x04,
         Ops::DEX,
-        Ops::BNE, 0xF6         
+        Ops::BPL, 0xF7        
     });
 
     cpu.run(43);
@@ -122,18 +122,19 @@ TEST(CPUTiming, MemoryCopyStress) {
 TEST(CPUTiming, SubroutineStackCheck) {
     Memory mem;
     CPU cpu(mem);
+    cpu.setDebugMode(debugActive); 
     cpu.reset();
+    cpu.setSP(0xFD); 
     cpu.setPC(0x8000);
 
     loadProgram(mem, 0x8000, {
-        Ops::JSR, 0x00, 0x90, 
-        Ops::TAX              
+        Ops::JSR, 0x10, 0x80,
+        Ops::TAX
     });
 
-    // Subrutina en 0x9000
-    loadProgram(mem, 0x9000, {
+    loadProgram(mem, 0x8010, { 
         Ops::LDA_IMM, 0x42, 
-        Ops::RTS              
+        Ops::RTS 
     });
 
     cpu.run(16);
@@ -141,5 +142,5 @@ TEST(CPUTiming, SubroutineStackCheck) {
     EXPECT_EQ(cpu.getCycles(), 16ULL);
     EXPECT_EQ(cpu.getRegister('A'), 0x42);
     EXPECT_EQ(cpu.getRegister('X'), 0x42);
-    EXPECT_EQ(cpu.getRegister('S'), 0xFD); 
+    EXPECT_EQ(cpu.getRegister('S'), 0xFD);
 }
