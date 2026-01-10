@@ -3,21 +3,28 @@
 
 #include <cstdint>
 #include <array>
+#include <memory>
+
+#include "../cartridge/cartridge.h"
 
 class Bus {
-    public:
-        Bus();
-        ~Bus();
+public:
+    Bus();
+    ~Bus();
 
-        uint8_t read(uint16_t addr);
-        void write(uint16_t addr, uint8_t value);
+    uint8_t read(uint16_t addr, bool bReadOnly = false);
+    void write(uint16_t addr, uint8_t value);
+    uint16_t read_u16(uint16_t addr);
+    void write_u16(uint16_t addr, uint16_t value);
 
-        uint16_t read_u16 (uint16_t addr);
-        void write_u16 (uint16_t addr, uint16_t value);
+    void insertCartridge(const std::shared_ptr<Cartridge>& cartridge);
+    
+    void reset();
 
-    private:
-        static constexpr int MEMORY_SIZE = 64 * 1024; // RAM 64Kb
-        std::array<uint8_t, MEMORY_SIZE> memoryData { };
+public:
+    std::array<uint8_t, 2048> cpuRam;
+    
+    std::shared_ptr<Cartridge> cart;
+    //std::shared_ptr<PPU> ppu;
 };
-
-#endif // bus_h
+#endif
