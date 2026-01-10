@@ -1,12 +1,11 @@
+// flags.h
 #ifndef flags_h
 #define flags_h
 
 #include <cstdint>
 
-#undef OVERFLOW
-
-
-#include <cstdint>
+// Evitar conflictos con macros de windows/system
+#undef OVERFLOW 
 
 class Flags {
 public:
@@ -16,12 +15,15 @@ public:
         INTERRUPT_DISABLE = 2,
         DECIMAL_MODE = 3,
         BREAK_COMMAND = 4,
-        UNUSED = 5,
+        UNUSED = 5,       
         OVERFLOW = 6,
         NEGATIVE = 7
     };
 
     Flags() : p(0x24) {} 
+    
+    Flags(uint8_t v) : p(v) {}
+
 
     void set(Flag f)    { p |=  (1 << f); }
     void clear(Flag f)  { p &= ~(1 << f); }
@@ -46,10 +48,10 @@ public:
     }
 
     void updateBIT(uint8_t accum, uint8_t memValue) {
-    ((accum & memValue) == 0) ? set(ZERO) : clear(ZERO);
-    (memValue & 0x80) ? set(NEGATIVE) : clear(NEGATIVE);
-    (memValue & 0x40) ? set(OVERFLOW) : clear(OVERFLOW);
-}
+        ((accum & memValue) == 0) ? set(ZERO) : clear(ZERO);
+        (memValue & 0x80) ? set(NEGATIVE) : clear(NEGATIVE);
+        (memValue & 0x40) ? set(OVERFLOW) : clear(OVERFLOW);
+    }
 
 private:
     uint8_t p;

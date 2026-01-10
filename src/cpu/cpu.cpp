@@ -20,18 +20,18 @@ void CPU::reset() {
     registers.X = 0;
     registers.Y = 0;
     registers.PC = 0;
-    registers.SP = 0xFD;
-    registers.status = 0x24;
+    registers.SP = STACK_RESET_POINTER;
+    registers.P.raw(STATUS_RESET_VALUE);
 }
 
 void CPU::pushStack (uint8_t value) {
-    mem.write(0x0100 + registers.SP, value);
+    mem.write(STACK_BASE + registers.SP, value);
     registers.SP--;
 }
 
 uint8_t CPU::pullStack() {
     registers.SP++;  
-    return mem.read(0x0100 + registers.SP);
+    return mem.read(STACK_BASE + registers.SP);
 }
 
 int CPU::executeInstruction() {
@@ -97,7 +97,7 @@ uint8_t CPU::getRegister(char registerName) const {
     }
 }
 
-void CPU::trace() {
+void CPU::trace(std::ostream& os) {
     uint8_t debugOpcode = mem.read(registers.PC);
     
     std::cout << std::hex << std::uppercase << std::setfill('0');
@@ -108,7 +108,7 @@ void CPU::trace() {
               << "X:"  << std::setw(2) << static_cast<int>(registers.X) << " "
               << "Y:"  << std::setw(2) << static_cast<int>(registers.Y) << " "
               << "SP:"  << std::setw(2) << static_cast<int>(registers.SP) << " "
-              << "P:" << std::setw(2) << static_cast<int>(registers.status) << " "
+              << "P:" << std::setw(2) << static_cast<int>(registers.P.raw()) << " "
               << std::dec << "CYC:" << total_cycles 
               << std::endl;
 }
