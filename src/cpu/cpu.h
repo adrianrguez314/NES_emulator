@@ -15,7 +15,8 @@ class CPU {
         CPU(Memory& memory);
         ~CPU();
         void reset();
-        void executeInstruction();
+        int executeInstruction();
+        void run(int cycles_to_execute);
 
         enum class AddressingMode {
             Immediate,
@@ -32,6 +33,12 @@ class CPU {
             Relative,
             Not_addressing,
         };
+
+        enum class ExecutionMode {
+            CycleAccurate,
+            Debug 
+        };
+
         uint16_t getAddress(AddressingMode mode);
 
         void setA(uint8_t v) { registers.A = v; }
@@ -48,6 +55,11 @@ class CPU {
 
         Flags& getFlags() { return registers.P; }
         const Flags& getFlags() const { return registers.P; }
+
+        uint64_t getCycles() const { return total_cycles; }
+        bool isInstructionComplete() const { return cycles_remaining == 0; }
+        void trace();
+        void setDebugMode(bool state) { debug_enabled = state; }
 
 
         // Load Register
@@ -144,6 +156,9 @@ class CPU {
 
                 Flags P;
             } registers;
+            long long total_cycles = 0;
+            int cycles_remaining = 0;
+            bool debug_enabled = false;
 
 };
 #endif // cpu_h
