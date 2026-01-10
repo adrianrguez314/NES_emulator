@@ -6,6 +6,8 @@
 #include <string>
 #include <memory>
 
+#include "mapper/mapper_00.h"
+
 class Cartridge {
 public:
     Cartridge(const std::string& fileName);
@@ -14,14 +16,17 @@ public:
     bool cpuRead(uint16_t addr, uint8_t &data);
     bool cpuWrite(uint16_t addr, uint8_t data);
 
-private:
-    std::vector<uint8_t> vPRGMemory; 
-    std::vector<uint8_t> vCHRMemory;
+    bool bImageValid = false;
+    bool ImageValid() { return bImageValid; }
 
-    uint8_t nMapperID = 0;
+private:
+    std::vector<uint8_t> PRGMemory; 
+    std::vector<uint8_t> CHRMemory;
+
+    uint8_t mapper = 0;
     uint8_t nPRGBanks = 0;
     uint8_t nCHRBanks = 0;
 
-    // std::unique_ptr<Mapper> pMapper;
+    std::unique_ptr<Mapper> pMapper;
 };
-#endif
+#endif // cartridge_h

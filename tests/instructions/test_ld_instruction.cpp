@@ -122,33 +122,48 @@ TEST(LDInstructions, AbsoluteIndexed) {
     Bus bus;
     CPU cpu(bus);
 
-    bus.write(0x2030, 0x55); 
+    bus.write(0x0230, 0x55); 
+    
+    cpu.setPC(0x0000); 
     bus.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
-    bus.write(0x0001, 0x10);
+    bus.write(0x0001, 0x10); 
+    
     bus.write(0x0002, static_cast<uint8_t>(Ops::LDA_ABSX));
-    bus.write_u16(0x0003, 0x2020);
+    bus.write_u16(0x0003, 0x0220); 
+    
     cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('X'), 0x10);
+    
     cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('A'), 0x55);
 
-    cpu.reset();
-    bus.write(0x2030, 0x66); 
+
+    cpu.setPC(0x0000); 
+    
+    bus.write(0x0230, 0x66); 
     bus.write(0x0000, static_cast<uint8_t>(Ops::LDY_IMM));
     bus.write(0x0001, 0x10);
+
     bus.write(0x0002, static_cast<uint8_t>(Ops::LDX_ABSY));
-    bus.write_u16(0x0003, 0x2020);
-    cpu.executeInstruction(); 
+    bus.write_u16(0x0003, 0x0220); 
+    
+    cpu.executeInstruction();
     EXPECT_EQ(cpu.getRegister('Y'), 0x10);
+    
     cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('X'), 0x66);
 
-    cpu.reset();
-    bus.write(0x2030, 0x77); 
+
+    cpu.setPC(0x0000);
+    
+    bus.write(0x0230, 0x77); 
+    
     bus.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
-    bus.write(0x0001, 0x10);
+    bus.write(0x0001, 0x10); 
+    
     bus.write(0x0002, static_cast<uint8_t>(Ops::LDY_ABSX));
-    bus.write_u16(0x0003, 0x2020);
+    bus.write_u16(0x0003, 0x0220); 
+    
     cpu.executeInstruction(); 
     EXPECT_EQ(cpu.getRegister('X'), 0x10);
     cpu.executeInstruction(); 
@@ -161,16 +176,19 @@ TEST(LDInstructions, IndirectX) {
 
     bus.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
     bus.write(0x0001, 0x04);
-    cpu.executeInstruction();
-
+    
     bus.write(0x0002, static_cast<uint8_t>(Ops::LDA_INX));
-    bus.write(0x0003, 0x02);
+    bus.write(0x0003, 0x02); 
+    bus.write(0x06, 0x10); 
+    bus.write(0x07, 0x02); 
 
-    bus.write(0x06, 0x10);
-    bus.write(0x07, 0x20);
-    bus.write(0x2010, 0x42);
 
-    cpu.executeInstruction();
+    bus.write(0x0210, 0x42); 
+
+    cpu.setPC(0x0000);
+    cpu.executeInstruction(); 
+    cpu.executeInstruction(); 
+    
     EXPECT_EQ(cpu.getRegister('A'), 0x42);
 }
 
@@ -179,18 +197,20 @@ TEST(LDInstructions, IndirectY) {
     CPU cpu(bus);
 
     bus.write(0x0000, static_cast<uint8_t>(Ops::LDY_IMM));
-    bus.write(0x0001, 0x05);
-    cpu.reset();
-    cpu.executeInstruction();
+    bus.write(0x0001, 0x05); 
 
     bus.write(0x0002, static_cast<uint8_t>(Ops::LDA_INY));
-    bus.write(0x0003, 0x10);
+    bus.write(0x0003, 0x10); 
 
-    bus.write(0x10, 0x20);
-    bus.write(0x11, 0x30);
-    bus.write(0x3025, 0x99);
+    bus.write(0x10, 0x20); 
+    bus.write(0x11, 0x03); 
 
-    cpu.executeInstruction();
+    bus.write(0x0325, 0x99);
+
+    cpu.setPC(0x0000);
+    cpu.executeInstruction(); 
+    
+    cpu.executeInstruction(); 
+    
     EXPECT_EQ(cpu.getRegister('A'), 0x99);
 }
-

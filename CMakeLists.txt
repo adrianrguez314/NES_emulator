@@ -7,25 +7,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(include)
 
 file(GLOB CPU_SOURCES 
-    "src/cpu/main.cpp"
     "src/cpu/*.cpp"
     "src/cpu/instructions/*.cpp"
-    "src/bus/*.cpp",
+    "src/bus/*.cpp"
     "src/cartridge/*.cpp"
 )
 
-message(STATUS "CPU Sources found: ${CPU_SOURCES}")
+
+list(FILTER CPU_SOURCES EXCLUDE REGEX ".*main\\.cpp$")
+
+message(STATUS "Emulator Lib Sources: ${CPU_SOURCES}")
+
+
 add_library(emulator_lib ${CPU_SOURCES})
 
 include(FetchContent)
-
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/refs/heads/main.zip
 )
-
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
@@ -36,7 +37,6 @@ file(GLOB TEST_FILES
 )
 
 add_executable(unit_tests ${TEST_FILES})
-
 target_link_libraries(unit_tests
     PRIVATE emulator_lib
     PRIVATE gtest_main
@@ -44,3 +44,7 @@ target_link_libraries(unit_tests
 
 include(GoogleTest)
 gtest_discover_tests(unit_tests)
+
+
+add_executable(main src/main.cpp)
+target_link_libraries(main PRIVATE emulator_lib)

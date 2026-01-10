@@ -36,9 +36,9 @@ TEST(STInstructions, STA) {
     cpu.executeInstruction();
 
     bus.write(0x0002, static_cast<uint8_t>(Ops::STA_ABS));
-    bus.write_u16(0x0003, 0x4020);
+    bus.write_u16(0x0003, 0x0220);
     cpu.executeInstruction();
-    EXPECT_EQ(bus.read(0x4020), 0x40);
+    EXPECT_EQ(bus.read(0x0220), 0x40);
 
     cpu.reset();
     bus.write(0x0000, static_cast<uint8_t>(Ops::LDX_IMM));
@@ -49,9 +49,9 @@ TEST(STInstructions, STA) {
     cpu.executeInstruction();
 
     bus.write(0x0004, static_cast<uint8_t>(Ops::STA_ABSX));
-    bus.write_u16(0x0005, 0x2000);
+    bus.write_u16(0x0005, 0x0200);
     cpu.executeInstruction();
-    EXPECT_EQ(bus.read(0x2010), 0x55);
+    EXPECT_EQ(bus.read(0x0210), 0x55);
 
     cpu.reset();
     bus.write(0x0000, static_cast<uint8_t>(Ops::LDY_IMM));
@@ -62,9 +62,9 @@ TEST(STInstructions, STA) {
     cpu.executeInstruction();
 
     bus.write(0x0004, static_cast<uint8_t>(Ops::STA_ABSY));
-    bus.write_u16(0x0005, 0x3000);
+    bus.write_u16(0x0005, 0x0300);
     cpu.executeInstruction();
-    EXPECT_EQ(bus.read(0x3008), 0x66);
+    EXPECT_EQ(bus.read(0x0308), 0x66);
 
     cpu.reset();
 
@@ -77,11 +77,11 @@ TEST(STInstructions, STA) {
     cpu.executeInstruction();
 
     bus.write(0x0006, 0x52); 
-    bus.write(0x0007, 0x60); 
+    bus.write(0x0007, 0x05); 
     bus.write(0x0004, static_cast<uint8_t>(Ops::STA_INX));
     bus.write(0x0005, 0x04);
     cpu.executeInstruction();
-    EXPECT_EQ(bus.read(0x6052), 0x77);
+    EXPECT_EQ(bus.read(0x0552), 0x77);
 
     cpu.reset();
     bus.write(0x0000, static_cast<uint8_t>(Ops::LDA_IMM));
@@ -95,9 +95,9 @@ TEST(STInstructions, STA) {
     bus.write(0x0004, static_cast<uint8_t>(Ops::STA_INY));
     bus.write(0x0005, 0x20);     
     bus.write(0x20, 0x40);      
-    bus.write(0x21, 0x50);        
+    bus.write(0x21, 0x05);        
     cpu.executeInstruction();
-    EXPECT_EQ(bus.read(0x5043), 0x88);
+    EXPECT_EQ(bus.read(0x0543), 0x88);
 }
 
 TEST(STInstructions, STX) {
@@ -133,9 +133,9 @@ TEST(STInstructions, STX) {
     cpu.executeInstruction();
 
     bus.write(0x0002, static_cast<uint8_t>(Ops::STX_ABS));
-    bus.write_u16(0x0003, 0x5000);
+    bus.write_u16(0x0003, 0x0500);
     cpu.executeInstruction();
-    EXPECT_EQ(bus.read(0x5000), 0x99);
+    EXPECT_EQ(bus.read(0x0500), 0x99);
 }
 
 TEST(STInstructions, STY) {
@@ -171,7 +171,7 @@ TEST(STInstructions, STY) {
     cpu.executeInstruction();
 
     bus.write(0x0002, static_cast<uint8_t>(Ops::STY_ABS));
-    bus.write_u16(0x0003, 0x6000);
+    bus.write_u16(0x0003, 0x0600);
     cpu.executeInstruction();
-    EXPECT_EQ(bus.read(0x6000), 0xCC);
+    EXPECT_EQ(bus.read(0x0600), 0xCC);
 }

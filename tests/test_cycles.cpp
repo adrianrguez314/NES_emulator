@@ -15,12 +15,12 @@ TEST(CPUTiming, LoopExecutionCycles) {
     CPU cpu(mem);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
-    cpu.setPC(0x8000);
+    cpu.setPC(0x0000);
 
-    loadProgram(mem, 0x8000, {
+    loadProgram(mem, 0x0000, {
         Ops::LDA_IMM, 0x10,
         Ops::TAX,
-        Ops::STA_ABS, 0x00, 0x20
+        Ops::STA_ABS, 0x20, 0x00 
     });
 
     cpu.run(8);
@@ -36,8 +36,9 @@ TEST(CPUTiming, LoopWithEnums) {
     CPU cpu(bus);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
-    cpu.setPC(0x8000);
-    loadProgram(bus, 0x8000, {
+    cpu.setPC(0x0000); 
+
+    loadProgram(bus, 0x0000, {
         Ops::LDX_IMM, 0x03, 
         Ops::DEX,           
         Ops::BNE, 0xFD       
@@ -55,9 +56,9 @@ TEST(CPUTiming, ArithmeticAndFlagsTiming) {
     CPU cpu(bus);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
-    cpu.setPC(0x8000);
+    cpu.setPC(0x0000);
 
-    loadProgram(bus, 0x8000, {
+    loadProgram(bus, 0x0000, {
         Ops::SEC,         
         Ops::SBC_IMM, 0x01  
     });
@@ -73,9 +74,9 @@ TEST(CPUTiming, MultiplicationLoop) {
     CPU cpu(bus);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
-    cpu.setPC(0x8000);
+    cpu.setPC(0x0000);
 
-    loadProgram(bus, 0x8000, {
+    loadProgram(bus, 0x0000, {
         Ops::LDA_IMM, 0x00,  
         Ops::LDX_IMM, 0x04,  
         Ops::CLC,            
@@ -97,13 +98,14 @@ TEST(CPUTiming, MemoryCopyStress) {
     CPU cpu(bus);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
-    cpu.setPC(0x8000);
+    cpu.setPC(0x0000); 
+
 
     bus.write(0x0300, 0xDE); 
     bus.write(0x0301, 0xAD); 
     bus.write(0x0302, 0xBE);
 
-    loadProgram(bus, 0x8000, {
+    loadProgram(bus, 0x0000, {
         Ops::LDX_IMM, 0x02,    
         Ops::LDA_ABSX, 0x00, 0x03, 
         Ops::STA_ABSX, 0x00, 0x04,
@@ -125,14 +127,15 @@ TEST(CPUTiming, SubroutineStackCheck) {
     cpu.setDebugMode(debugActive); 
     cpu.reset();
     cpu.setSP(0xFD); 
-    cpu.setPC(0x8000);
+    cpu.setPC(0x0000); 
 
-    loadProgram(bus, 0x8000, {
-        Ops::JSR, 0x10, 0x80,
+    loadProgram(bus, 0x0000, {
+        Ops::JSR, 0x10, 0x00,
         Ops::TAX
     });
 
-    loadProgram(bus, 0x8010, { 
+
+    loadProgram(bus, 0x0010, { 
         Ops::LDA_IMM, 0x42, 
         Ops::RTS 
     });

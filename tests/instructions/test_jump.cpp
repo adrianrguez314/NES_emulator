@@ -22,14 +22,14 @@ TEST_P(JumpInstructions, Execute) {
 
     if (test.mode == CPU::AddressingMode::Absolute) {
 
-        bus.write(0xFFFC, static_cast<uint8_t>(test.opcode));
-        bus.write(0xFFFD, static_cast<uint8_t>(test.baseAddr & 0xFF));
-        bus.write(0xFFFE, static_cast<uint8_t>((test.baseAddr >> 8) & 0xFF));
+        bus.write(0x0000, static_cast<uint8_t>(test.opcode));
+        bus.write(0x0001, static_cast<uint8_t>(test.baseAddr & 0xFF));
+        bus.write(0x0002, static_cast<uint8_t>((test.baseAddr >> 8) & 0xFF));
     } else if (test.mode == CPU::AddressingMode::Indirect) {
 
-        bus.write(0xFFFC, static_cast<uint8_t>(test.opcode));
-        bus.write(0xFFFD, static_cast<uint8_t>(test.baseAddr & 0xFF));   
-        bus.write(0xFFFE, static_cast<uint8_t>((test.baseAddr >> 8) & 0xFF)); 
+        bus.write(0x0000, static_cast<uint8_t>(test.opcode));
+        bus.write(0x0001, static_cast<uint8_t>(test.baseAddr & 0xFF));   
+        bus.write(0x0002, static_cast<uint8_t>((test.baseAddr >> 8) & 0xFF)); 
 
         uint16_t ptr = test.baseAddr; 
         uint16_t target = test.expectedPC;
@@ -40,7 +40,7 @@ TEST_P(JumpInstructions, Execute) {
         bus.write(highAddr, static_cast<uint8_t>((target >> 8) & 0xFF)); 
         }
 
-    cpu.setPC(0xFFFC);
+    cpu.setPC(0x0000);
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getPC(), test.expectedPC);
 }
@@ -50,9 +50,9 @@ INSTANTIATE_TEST_SUITE_P(
     JumpInstructions,
     ::testing::Values(
         JumpTestCase{Ops::JMP_ABS, CPU::AddressingMode::Absolute, 0x1234, 0x1234, "JMP_ABS_basic"},
-        JumpTestCase{Ops::JMP_IND, CPU::AddressingMode::Indirect, 0x2000, 0x3456, "JMP_IND_basic"},
-        JumpTestCase{Ops::JMP_IND, CPU::AddressingMode::Indirect, 0x30FF, 0x78AB, "JMP_IND_bug"},
-        JumpTestCase{Ops::JSR, CPU::AddressingMode::Absolute, 0x4000, 0x4000, "JSR_ABS_basic"}
+        JumpTestCase{Ops::JMP_IND, CPU::AddressingMode::Indirect, 0x0200, 0x0345, "JMP_IND_basic"},
+        JumpTestCase{Ops::JMP_IND, CPU::AddressingMode::Indirect, 0x02FF, 0x0400, "JMP_IND_bug"},
+        JumpTestCase{Ops::JSR, CPU::AddressingMode::Absolute, 0x0500, 0x0500, "JSR_ABS_basic"}
     ),
     [](const ::testing::TestParamInfo<JumpTestCase>& info) {
         return std::string(info.param.name);
