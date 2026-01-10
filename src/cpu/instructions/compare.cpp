@@ -3,7 +3,7 @@
 
 void CPU::opCMP(AddressingMode mode) {
     uint16_t addr = getAddress(mode);
-    uint8_t value = mem.read(addr);
+    uint8_t value = bus.read(addr);
     uint8_t result = registers.A - value;
 
     if (registers.A >= value)
@@ -16,7 +16,7 @@ void CPU::opCMP(AddressingMode mode) {
 
 void CPU::opCPX(AddressingMode mode) {
     uint16_t addr = getAddress(mode);
-    uint8_t value = mem.read(addr);
+    uint8_t value = bus.read(addr);
     uint8_t result = registers.X - value;
 
     if (registers.X >= value)
@@ -30,7 +30,7 @@ void CPU::opCPX(AddressingMode mode) {
 
 void CPU::opCPY(AddressingMode mode) {
     uint16_t addr = getAddress(mode);
-    uint8_t value = mem.read(addr);
+    uint8_t value = bus.read(addr);
     uint8_t result = registers.Y - value;
 
     if (registers.Y >= value)

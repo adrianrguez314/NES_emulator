@@ -3,7 +3,7 @@
 
 void CPU::opAND(AddressingMode mode) {
     uint16_t addr = CPU::getAddress(mode);
-    uint8_t value = mem.read(addr);
+    uint8_t value = bus.read(addr);
 
     registers.A &= value;
 
@@ -13,7 +13,7 @@ void CPU::opAND(AddressingMode mode) {
 void CPU::opORA(AddressingMode mode) {
     uint16_t addr = CPU::getAddress(mode);
 
-    uint8_t value = mem.read(addr);
+    uint8_t value = bus.read(addr);
     registers.A |= value;
 
     registers.P.updateZN(registers.A);
@@ -22,7 +22,7 @@ void CPU::opORA(AddressingMode mode) {
 void CPU::opEOR(AddressingMode mode) {
     uint16_t addr = CPU::getAddress(mode);
 
-    uint8_t value = mem.read(addr);
+    uint8_t value = bus.read(addr);
     registers.A ^= value;
 
     registers.P.updateZN(registers.A);
@@ -31,7 +31,7 @@ void CPU::opEOR(AddressingMode mode) {
 void CPU::opBIT(AddressingMode mode){
     uint16_t addr = CPU::getAddress(mode);
 
-    uint8_t value = mem.read(addr);
+    uint8_t value = bus.read(addr);
 
     registers.P.updateBIT(registers.A,value);
 }

@@ -10,7 +10,7 @@ file(GLOB CPU_SOURCES
     "src/cpu/main.cpp"
     "src/cpu/*.cpp"
     "src/cpu/instructions/*.cpp"
-    "src/memory/*.cpp"
+    "src/bus/*.cpp"
 )
 
 message(STATUS "CPU Sources found: ${CPU_SOURCES}")

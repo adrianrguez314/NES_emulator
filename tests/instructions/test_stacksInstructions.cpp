@@ -6,15 +6,15 @@
 
 class StackRegisterInstructions : public ::testing::Test {
 protected:
-    Memory mem;
-    CPU cpu{mem};
+    Bus bus;
+    CPU cpu{bus};
 
     void SetUp() override {
         cpu.reset();
     }
 
     uint8_t topStack() {
-        return mem.read(0x0100 + cpu.getRegister('S') + 1);
+        return bus.read(0x0100 + cpu.getRegister('S') + 1);
     }
 };
 

@@ -6,14 +6,14 @@
 
 
 TEST(LogicalInstructions, BIT_Flags_Behavior) {
-    Memory mem;
-    CPU cpu(mem);
+    Bus bus;
+    CPU cpu(bus);
 
-    mem.write(0x0000, static_cast<uint8_t>(Ops::LDA_IMM));
-    mem.write(0x0001, 0x00); 
-    mem.write(0x0002, static_cast<uint8_t>(Ops::BIT_ZP));
-    mem.write(0x0003, 0x10); 
-    mem.write(0x0010, 0xC0); 
+    bus.write(0x0000, static_cast<uint8_t>(Ops::LDA_IMM));
+    bus.write(0x0001, 0x00); 
+    bus.write(0x0002, static_cast<uint8_t>(Ops::BIT_ZP));
+    bus.write(0x0003, 0x10); 
+    bus.write(0x0010, 0xC0); 
     
     cpu.executeInstruction(); 
     cpu.executeInstruction(); 
@@ -24,11 +24,11 @@ TEST(LogicalInstructions, BIT_Flags_Behavior) {
     EXPECT_TRUE(cpu.getFlags().isSet(Flags::OVERFLOW)); 
 
 
-    mem.write(0x0004, static_cast<uint8_t>(Ops::LDA_IMM));
-    mem.write(0x0005, 0xFF);
-    mem.write(0x0006, static_cast<uint8_t>(Ops::BIT_ZP));
-    mem.write(0x0007, 0x11);
-    mem.write(0x0011, 0x01); 
+    bus.write(0x0004, static_cast<uint8_t>(Ops::LDA_IMM));
+    bus.write(0x0005, 0xFF);
+    bus.write(0x0006, static_cast<uint8_t>(Ops::BIT_ZP));
+    bus.write(0x0007, 0x11);
+    bus.write(0x0011, 0x01); 
 
     cpu.executeInstruction(); 
     cpu.executeInstruction(); 
@@ -39,13 +39,13 @@ TEST(LogicalInstructions, BIT_Flags_Behavior) {
 }
 
 TEST(LogicalInstructions, AND_ORA_EOR) {
-    Memory mem;
-    CPU cpu(mem);
+    Bus bus;
+    CPU cpu(bus);
 
-    mem.write(0x0000, static_cast<uint8_t>(Ops::LDA_IMM));
-    mem.write(0x0001, 0x0F);
-    mem.write(0x0002, static_cast<uint8_t>(Ops::AND_IMM));
-    mem.write(0x0003, 0x11);
+    bus.write(0x0000, static_cast<uint8_t>(Ops::LDA_IMM));
+    bus.write(0x0001, 0x0F);
+    bus.write(0x0002, static_cast<uint8_t>(Ops::AND_IMM));
+    bus.write(0x0003, 0x11);
     
     cpu.executeInstruction();
     cpu.executeInstruction(); 
@@ -53,15 +53,15 @@ TEST(LogicalInstructions, AND_ORA_EOR) {
     EXPECT_FALSE(cpu.getFlags().isSet(Flags::ZERO));
     EXPECT_FALSE(cpu.getFlags().isSet(Flags::NEGATIVE));
 
-    mem.write(0x0004, static_cast<uint8_t>(Ops::ORA_IMM));
-    mem.write(0x0005, 0x80);
+    bus.write(0x0004, static_cast<uint8_t>(Ops::ORA_IMM));
+    bus.write(0x0005, 0x80);
     
     cpu.executeInstruction(); // ORA
     EXPECT_EQ(cpu.getRegister('A'), 0x81);
     EXPECT_TRUE(cpu.getFlags().isSet(Flags::NEGATIVE));
 
-    mem.write(0x0006, static_cast<uint8_t>(Ops::EOR_IMM));
-    mem.write(0x0007, 0x81);
+    bus.write(0x0006, static_cast<uint8_t>(Ops::EOR_IMM));
+    bus.write(0x0007, 0x81);
     
     cpu.executeInstruction(); // EOR
     EXPECT_EQ(cpu.getRegister('A'), 0x00);

@@ -5,7 +5,7 @@
 #include "opcodes.h"
 
 
-CPU::CPU(Memory& memory) : mem(memory) {
+CPU::CPU(Bus& bus) : bus(bus) {
     initOpcodeTable();
     reset();
     std::cout << "CPU initialized.\n";
@@ -25,20 +25,20 @@ void CPU::reset() {
 }
 
 void CPU::pushStack (uint8_t value) {
-    mem.write(STACK_BASE + registers.SP, value);
+    bus.write(STACK_BASE + registers.SP, value);
     registers.SP--;
 }
 
 uint8_t CPU::pullStack() {
     registers.SP++;  
-    return mem.read(STACK_BASE + registers.SP);
+    return bus.read(STACK_BASE + registers.SP);
 }
 
 int CPU::executeInstruction() {
     extra_cycles = 0;  
     page_crossed = false;
 
-    uint8_t opcode = mem.read(registers.PC);
+    uint8_t opcode = bus.read(registers.PC);
     registers.PC++;
     uint16_t pc_status = registers.PC;
     
@@ -67,7 +67,7 @@ void CPU::run(int cycles_to_run) {
 
 void CPU::branchRelative(bool condition) {
 
-    int8_t offset = static_cast<int8_t>(mem.read(registers.PC)); 
+    int8_t offset = static_cast<int8_t>(bus.read(registers.PC)); 
     
     if (condition) {
         addCycles(1); 
@@ -98,7 +98,7 @@ uint8_t CPU::getRegister(char registerName) const {
 }
 
 void CPU::trace(std::ostream& os) {
-    uint8_t debugOpcode = mem.read(registers.PC);
+    uint8_t debugOpcode = bus.read(registers.PC);
     
     std::cout << std::hex << std::uppercase << std::setfill('0');
 

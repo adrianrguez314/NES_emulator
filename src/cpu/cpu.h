@@ -5,15 +5,15 @@
 #include <cstdint>
 #include <functional>
 
-#include "../memory/memory.h"
+#include "../bus/bus.h"
 #include "flags.h"
 
 class CPU {
 
-    Memory& mem;
+    Bus& bus;
 
     public:
-        CPU(Memory& memory);
+        CPU(Bus& Bus);
         ~CPU();
         void reset();
         int executeInstruction();

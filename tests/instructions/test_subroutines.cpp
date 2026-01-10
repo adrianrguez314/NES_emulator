@@ -5,8 +5,8 @@
 
 class SubroutineInstructions : public ::testing::Test {
 protected:
-    Memory mem;
-    CPU cpu{mem};
+    Bus bus;
+    CPU cpu{bus};
 
     void SetUp() override {
         cpu.reset();
@@ -14,18 +14,18 @@ protected:
     }
 
     uint8_t topStack() {
-        return mem.read(0x0100 + cpu.getRegister('S') + 1);
+        return bus.read(0x0100 + cpu.getRegister('S') + 1);
     }
 
     uint8_t stackPeek(uint8_t offset = 0) {
-        return mem.read(0x0100 + cpu.getRegister('S') + 1 + offset);
+        return bus.read(0x0100 + cpu.getRegister('S') + 1 + offset);
     }
 };
 
 TEST_F(SubroutineInstructions, JSR_pushes_return_and_jumps) {
-    mem.write(0x8000, static_cast<uint8_t>(Ops::JSR));
-    mem.write(0x8001, 0x00);
-    mem.write(0x8002, 0x90);
+    bus.write(0x8000, static_cast<uint8_t>(Ops::JSR));
+    bus.write(0x8001, 0x00);
+    bus.write(0x8002, 0x90);
 
     uint8_t initialSP = cpu.getRegister('S');
 
@@ -33,8 +33,8 @@ TEST_F(SubroutineInstructions, JSR_pushes_return_and_jumps) {
     EXPECT_EQ(cpu.getPC(), 0x9000);
 
     uint16_t returnAddr = 0x8002;
-    uint8_t pushedHigh = mem.read(0x0100 + initialSP);
-    uint8_t pushedLow  = mem.read(0x0100 + initialSP - 1);
+    uint8_t pushedHigh = bus.read(0x0100 + initialSP);
+    uint8_t pushedLow  = bus.read(0x0100 + initialSP - 1);
 
     EXPECT_EQ(pushedHigh, (returnAddr >> 8) & 0xFF); 
     EXPECT_EQ(pushedLow,  returnAddr & 0xFF);        
@@ -47,7 +47,7 @@ TEST_F(SubroutineInstructions, RTS_pulls_return_and_continues) {
     cpu.pushStack(0x80); 
     cpu.pushStack(0x02); 
 
-    mem.write(0x9000, static_cast<uint8_t>(Ops::RTS));
+    bus.write(0x9000, static_cast<uint8_t>(Ops::RTS));
 
     cpu.executeInstruction();
     EXPECT_EQ(cpu.getPC(), 0x8003);
@@ -58,8 +58,8 @@ TEST_F(SubroutineInstructions, BRK_pushes_pc_and_status_and_jumps) {
     cpu.setPC(0x2000);
     cpu.getFlags().raw(0b01010101); 
 
-    mem.write(0xFFFE, 0x34); 
-    mem.write(0xFFFF, 0x12); 
+    bus.write(0xFFFE, 0x34); 
+    bus.write(0xFFFF, 0x12); 
     
     cpu.opBRK(CPU::AddressingMode::Immediate);
 

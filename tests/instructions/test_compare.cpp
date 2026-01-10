@@ -17,8 +17,8 @@ struct CompareTestCase {
 
 class CompareInstructions : public ::testing::TestWithParam<CompareTestCase> {
 protected:
-    Memory mem;
-    CPU cpu{mem};
+    Bus bus;
+    CPU cpu{bus};
 };
 
 TEST_P(CompareInstructions, Execute) {
@@ -43,8 +43,8 @@ TEST_P(CompareInstructions, Execute) {
             FAIL() << "Opcode don't suport in this test";
     }
 
-    mem.write(0x0000, static_cast<uint8_t>(test.opcode));
-    mem.write(0x0001, test.mem_value);                   
+    bus.write(0x0000, static_cast<uint8_t>(test.opcode));
+    bus.write(0x0001, test.mem_value);                   
 
     cpu.executeInstruction();
 
