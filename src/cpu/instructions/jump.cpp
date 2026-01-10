@@ -36,8 +36,8 @@ void CPU::opBRK(AddressingMode) {
     pushStack(status);
     registers.P.set(Flags::INTERRUPT_DISABLE);
 
-    uint8_t low  = mem.read(0xFFFE);
-    uint8_t high = mem.read(0xFFFF);
+    uint8_t low  = bus.read(0xFFFE);
+    uint8_t high = bus.read(0xFFFF);
     registers.PC = ((uint16_t)high << 8) | low;
 }
 

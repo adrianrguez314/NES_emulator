@@ -14,8 +14,8 @@ struct FlagTestCase {
 
 class FlagsInstructions : public ::testing::TestWithParam<FlagTestCase> {
 protected:
-    Memory mem;
-    CPU cpu{mem};
+    Bus bus;
+    CPU cpu{bus};
 };
 
 TEST_P(FlagsInstructions, Execute) {
@@ -27,7 +27,7 @@ TEST_P(FlagsInstructions, Execute) {
         cpu.getFlags().updateOverflow(0x50, 0x50, 0xA0);
     }
 
-    mem.write(0x0000, static_cast<uint8_t>(test.opcode));
+    bus.write(0x0000, static_cast<uint8_t>(test.opcode));
     cpu.executeInstruction();
 
     EXPECT_EQ(cpu.getFlags().isSet(test.flag), test.expected);

@@ -3,7 +3,7 @@
 
 void CPU::opLDA(AddressingMode mode) {
     uint16_t addr = getAddress(mode);
-    uint8_t value = mem.read(addr);
+    uint8_t value = bus.read(addr);
 
     registers.P.updateZN(value);
     registers.A = value;
@@ -11,7 +11,7 @@ void CPU::opLDA(AddressingMode mode) {
 
 void CPU::opLDX(AddressingMode mode) {
     uint16_t addr = getAddress(mode);
-    uint8_t value = mem.read(addr);
+    uint8_t value = bus.read(addr);
 
     registers.P.updateZN(value);
     registers.X = value;
@@ -21,7 +21,7 @@ void CPU::opLDX(AddressingMode mode) {
 
 void CPU::opLDY(AddressingMode mode) {
     uint16_t addr = getAddress(mode);
-    uint8_t value = mem.read(addr);
+    uint8_t value = bus.read(addr);
 
     registers.P.updateZN(value);
     registers.Y = value;

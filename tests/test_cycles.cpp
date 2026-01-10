@@ -2,25 +2,25 @@
 #include "../src/cpu/cpu.h"
 #include "../src/cpu/opcodes.h"
 
-void loadProgram(Memory& mem, uint16_t addr, std::initializer_list<uint8_t> instructions) {
+void loadProgram(Bus& bus, uint16_t addr, std::initializer_list<uint8_t> instructions) {
     for (auto byte : instructions) {
-        mem.write(addr++, byte);
+        bus.write(addr++, byte);
     }
 }
 
 bool debugActive = true;
 
 TEST(CPUTiming, LoopExecutionCycles) {
-    Memory mem;
+    Bus mem;
     CPU cpu(mem);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
-    cpu.setPC(0x8000);
+    cpu.setPC(0x0000);
 
-    loadProgram(mem, 0x8000, {
+    loadProgram(mem, 0x0000, {
         Ops::LDA_IMM, 0x10,
         Ops::TAX,
-        Ops::STA_ABS, 0x00, 0x20
+        Ops::STA_ABS, 0x20, 0x00 
     });
 
     cpu.run(8);
@@ -32,12 +32,13 @@ TEST(CPUTiming, LoopExecutionCycles) {
 }
 
 TEST(CPUTiming, LoopWithEnums) {
-    Memory mem;
-    CPU cpu(mem);
+    Bus bus;
+    CPU cpu(bus);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
-    cpu.setPC(0x8000);
-    loadProgram(mem, 0x8000, {
+    cpu.setPC(0x0000); 
+
+    loadProgram(bus, 0x0000, {
         Ops::LDX_IMM, 0x03, 
         Ops::DEX,           
         Ops::BNE, 0xFD       
@@ -51,13 +52,13 @@ TEST(CPUTiming, LoopWithEnums) {
 }
 
 TEST(CPUTiming, ArithmeticAndFlagsTiming) {
-    Memory mem;
-    CPU cpu(mem);
+    Bus bus;
+    CPU cpu(bus);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
-    cpu.setPC(0x8000);
+    cpu.setPC(0x0000);
 
-    loadProgram(mem, 0x8000, {
+    loadProgram(bus, 0x0000, {
         Ops::SEC,         
         Ops::SBC_IMM, 0x01  
     });
@@ -69,13 +70,13 @@ TEST(CPUTiming, ArithmeticAndFlagsTiming) {
 }
 
 TEST(CPUTiming, MultiplicationLoop) {
-    Memory mem;
-    CPU cpu(mem);
+    Bus bus;
+    CPU cpu(bus);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
-    cpu.setPC(0x8000);
+    cpu.setPC(0x0000);
 
-    loadProgram(mem, 0x8000, {
+    loadProgram(bus, 0x0000, {
         Ops::LDA_IMM, 0x00,  
         Ops::LDX_IMM, 0x04,  
         Ops::CLC,            
@@ -93,17 +94,18 @@ TEST(CPUTiming, MultiplicationLoop) {
 }
 
 TEST(CPUTiming, MemoryCopyStress) {
-    Memory mem;
-    CPU cpu(mem);
+    Bus bus;
+    CPU cpu(bus);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
-    cpu.setPC(0x8000);
+    cpu.setPC(0x0000); 
 
-    mem.write(0x0300, 0xDE); 
-    mem.write(0x0301, 0xAD); 
-    mem.write(0x0302, 0xBE);
 
-    loadProgram(mem, 0x8000, {
+    bus.write(0x0300, 0xDE); 
+    bus.write(0x0301, 0xAD); 
+    bus.write(0x0302, 0xBE);
+
+    loadProgram(bus, 0x0000, {
         Ops::LDX_IMM, 0x02,    
         Ops::LDA_ABSX, 0x00, 0x03, 
         Ops::STA_ABSX, 0x00, 0x04,
@@ -113,26 +115,27 @@ TEST(CPUTiming, MemoryCopyStress) {
 
     cpu.run(43);
 
-    EXPECT_EQ(mem.read(0x0400), 0xDE);
-    EXPECT_EQ(mem.read(0x0401), 0xAD);
-    EXPECT_EQ(mem.read(0x0402), 0xBE);
+    EXPECT_EQ(bus.read(0x0400), 0xDE);
+    EXPECT_EQ(bus.read(0x0401), 0xAD);
+    EXPECT_EQ(bus.read(0x0402), 0xBE);
     EXPECT_TRUE(cpu.isInstructionComplete());
 }
 
 TEST(CPUTiming, SubroutineStackCheck) {
-    Memory mem;
-    CPU cpu(mem);
+    Bus bus;
+    CPU cpu(bus);
     cpu.setDebugMode(debugActive); 
     cpu.reset();
     cpu.setSP(0xFD); 
-    cpu.setPC(0x8000);
+    cpu.setPC(0x0000); 
 
-    loadProgram(mem, 0x8000, {
-        Ops::JSR, 0x10, 0x80,
+    loadProgram(bus, 0x0000, {
+        Ops::JSR, 0x10, 0x00,
         Ops::TAX
     });
 
-    loadProgram(mem, 0x8010, { 
+
+    loadProgram(bus, 0x0010, { 
         Ops::LDA_IMM, 0x42, 
         Ops::RTS 
     });
