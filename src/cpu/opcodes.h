@@ -92,20 +92,20 @@ inline void initOpcodeTable() {
     reg(Ops::LDY_ABS,  AM::Absolute,    3, 4, &CPU::opLDY);
     reg(Ops::LDY_ABSX, AM::Absolute_X,  3, 4, &CPU::opLDY);
 
-    reg(Ops::STA_ZP,   AM::ZeroPage,    2, 2, &CPU::opSTA);
-    reg(Ops::STA_ZPX,  AM::ZeroPage_X,  2, 3, &CPU::opSTA);
+    reg(Ops::STA_ZP,   AM::ZeroPage,    2, 3, &CPU::opSTA);
+    reg(Ops::STA_ZPX,  AM::ZeroPage_X,  2, 4, &CPU::opSTA);
     reg(Ops::STA_ABS,  AM::Absolute,    3, 4, &CPU::opSTA);
     reg(Ops::STA_ABSX, AM::Absolute_X,  3, 5, &CPU::opSTA); 
     reg(Ops::STA_ABSY, AM::Absolute_Y,  3, 5, &CPU::opSTA);
     reg(Ops::STA_INX,  AM::Indirect_X,  2, 6, &CPU::opSTA);
     reg(Ops::STA_INY,  AM::Indirect_Y,  2, 6, &CPU::opSTA);
 
-    reg(Ops::STX_ZP,   AM::ZeroPage,    2, 2, &CPU::opSTX);
-    reg(Ops::STX_ZPY,  AM::ZeroPage_Y,  2, 3, &CPU::opSTX);
+    reg(Ops::STX_ZP,   AM::ZeroPage,    2, 3, &CPU::opSTX);
+    reg(Ops::STX_ZPY,  AM::ZeroPage_Y,  2, 4, &CPU::opSTX);
     reg(Ops::STX_ABS,  AM::Absolute,    3, 4, &CPU::opSTX);
 
-    reg(Ops::STY_ZP,   AM::ZeroPage,    2, 2, &CPU::opSTY);
-    reg(Ops::STY_ZPX,  AM::ZeroPage_X,  2, 3, &CPU::opSTY);
+    reg(Ops::STY_ZP,   AM::ZeroPage,    2, 3, &CPU::opSTY);
+    reg(Ops::STY_ZPX,  AM::ZeroPage_X,  2, 4, &CPU::opSTY);
     reg(Ops::STY_ABS,  AM::Absolute,    3, 4, &CPU::opSTY);
 
     // --- Register / Transfer ---

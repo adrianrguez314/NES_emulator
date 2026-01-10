@@ -17,7 +17,7 @@ class Memory {
         void read_memory_block(int start, int length);
 
     private:
-        static constexpr int MEMORY_SIZE = 2 * 1024; // 2KB RAM
+        static constexpr int MEMORY_SIZE = 64 * 1024; // RAM 64Kb
         std::array<uint8_t, MEMORY_SIZE> memoryData { };
 };
 
